@@ -6,8 +6,10 @@ namespace VacationManagementApp.Models
     public class Employee : User
     {
 
-        [Required]
-        public int? EmployersID {  get; set; }
+        
+        [DataType(DataType.EmailAddress)]
+        public string EmployersEmail {  get; set; }
+        public ICollection<Vacation> Vacations { get; set; }
         
     }
 }

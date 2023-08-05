@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace VacationManagementApp.Migrations
 {
     /// <inheritdoc />
-    public partial class EmplyeeEmployerVacationMig : Migration
+    public partial class idToEmail : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -180,7 +180,7 @@ namespace VacationManagementApp.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    EmployersID = table.Column<int>(type: "int", nullable: false)
+                    EmployersEmail = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {

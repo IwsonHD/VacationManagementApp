@@ -12,8 +12,8 @@ using VacationManagementApp.DataBases;
 namespace VacationManagementApp.Migrations
 {
     [DbContext(typeof(VacationManagerDbContext))]
-    [Migration("20230803123614_EmplyeeEmployerVacationMig")]
-    partial class EmplyeeEmployerVacationMig
+    [Migration("20230803235636_idToEmail")]
+    partial class idToEmail
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -268,8 +268,9 @@ namespace VacationManagementApp.Migrations
                 {
                     b.HasBaseType("VacationManagementApp.Models.User");
 
-                    b.Property<int>("EmployersID")
-                        .HasColumnType("int");
+                    b.Property<string>("EmployersEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.ToTable("Employees", (string)null);
                 });

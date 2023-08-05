@@ -23,6 +23,10 @@ namespace VacationManagementApp.DataBases
 
             modelBuilder.Entity<Employer>().ToTable("Employers");
             modelBuilder.Entity<Employer>().HasBaseType<User>();
+            modelBuilder.Entity<Employee>()
+                .HasMany(e => e.Vacations)
+                .WithOne(v => v.Employee)
+                .HasForeignKey(v => v.EmployeeId);
         }
 
 

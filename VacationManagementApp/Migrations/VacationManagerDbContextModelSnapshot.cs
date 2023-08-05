@@ -265,8 +265,9 @@ namespace VacationManagementApp.Migrations
                 {
                     b.HasBaseType("VacationManagementApp.Models.User");
 
-                    b.Property<int>("EmployersID")
-                        .HasColumnType("int");
+                    b.Property<string>("EmployersEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.ToTable("Employees", (string)null);
                 });

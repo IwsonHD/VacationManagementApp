@@ -1,0 +1,51 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model User
+
+@if(User.Identity.IsAuthenticated){
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Type</th>
+                <th scope="col">Data</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="table-primary">
+                <th scope="row">First name</th>
+                <td>@Model.FirstName</td>
+              
+            </tr>
+            <tr class="table-primary">
+                <th scope="row">Last name</th>
+                <td>@Model.LastName</td>
+                
+            </tr>
+            <tr class="table-primary">
+                <th scope="row">E-Mail address</th>
+                <td>@Model.EmailAddress</td>
+            </tr>
+            <tr class="table-primary">
+                <th scope="row">PhoneNumber</th>
+                <td>@Model.PhoneNumber</td>
+            </tr>
+           @* @if (User.IsInRole("Employee"))
+            {
+                <tr class="table-primary">
+                    <th scope="row">PhoneNumber</th>
+                    <td>@Model.Empl</td>
+                </tr>
+            }
+            else if(User.IsInRole("Employer"))
+            {
+                <tr class="table-primary">
+                    <th scope="row">PhoneNumber</th>
+                    <td>@Model.PhoneNumber</td>
+                </tr>
+            }
+*@
+        </tbody>
+    </table>
+}
