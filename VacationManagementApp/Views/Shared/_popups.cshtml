@@ -5,9 +5,14 @@
 }
 @if (TempData["success"] != null)
 {
+    <style>
+        #toast-container > .toast-success {
+            background-color: #56cc9d;
+        }
+    </style>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script type="text/javascript">
-        toastr.success('@TempData["success"]')
+        toastr.success('@TempData["success"]')    
     </script>
 }
