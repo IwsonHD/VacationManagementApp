@@ -22,7 +22,8 @@
             {
                 <tr class="table-primary">
                     <th scope="row">@nr</th>
-                    <td>@emp</td>
+                    <td>@emp.Email</td>
+                    <td><a class="btn btn-primary btn-warning" asp-controller="Vacations" asp-action="YourEmployeesVacation" asp-route-Email="@emp.Email">Vacations</a></td>
                 </tr>
                 
                 nr++;

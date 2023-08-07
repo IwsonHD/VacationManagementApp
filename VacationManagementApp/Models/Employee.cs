@@ -12,4 +12,6 @@ namespace VacationManagementApp.Models
         public ICollection<Vacation> Vacations { get; set; }
         
     }
+
+
 }

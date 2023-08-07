@@ -24,10 +24,10 @@
                     <td>@vacation.HowManyDays</td>
                     <td>@vacation.When</td>
                     <td>@vacation.state</td>
+                    <td><a class="btn btn-primary btn-warning" asp-controller="Vacations" asp-action="EditState" asp-route-Id="@vacation.Id">Edit state</a></td>
                 </tr>
                 nr++;
             }
         </tbody>
     </table>
-    <a class="btn btn-primary float-end pe-2" asp-controller="Vacations" asp-action="Create" >Add Vacation </a>
 }

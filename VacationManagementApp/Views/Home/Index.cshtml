@@ -4,7 +4,7 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome 
-        @if (User.Identity.IsAuthenticated)
+        @if (User.IsInRole("Employee") || User.IsInRole("Employer"))
         {
             @User.Identity.Name
         }
