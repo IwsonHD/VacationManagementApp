@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using VacationManagementApp.DataBases;
 using VacationManagementApp.Models;
@@ -33,9 +35,10 @@ namespace VacationManagementApp.Controllers
         {
             vacation.EmployeeId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            
-            
-            
+
+            if (ModelState.IsValid)
+            {
+
                 Vacation newVacation = new Vacation
                 {
                     HowManyDays = vacation.HowManyDays,
@@ -50,8 +53,9 @@ namespace VacationManagementApp.Controllers
 
 
                 return RedirectToAction("Index");
+            }
 
-
+            return View(vacation);
         
         }
 
@@ -83,14 +87,14 @@ namespace VacationManagementApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult EditState(int vacationsId)
+        public IActionResult EditState(int? Id)
         {
-            if (vacationsId == null || vacationsId == 0)
+            if (Id == null || Id == 0)
             {
                 return NotFound();
             }
 
-            var vacationFromDb = _db.Vacations.Find(vacationsId);
+            var vacationFromDb = _db.Vacations.Find(Id);
 
             if(vacationFromDb == null)
             {
@@ -98,8 +102,30 @@ namespace VacationManagementApp.Controllers
             }
 
             return View(vacationFromDb);
-        }        
+        }
 
+
+        [HttpPost]
+        public IActionResult EditState(Vacation editedVacation)
+        {
+            
+            ModelState.Remove("Employee");
+            
+            
+            if (ModelState.IsValid)
+            {
+                string Email = _db.Employees.SingleOrDefault(e => e.Id == editedVacation.EmployeeId).Email;
+                if(Email == null) { return NotFound(); }
+
+                _db.Vacations.Update(editedVacation);
+                _db.SaveChanges();
+                TempData["success"] = "State has been successfully updated";
+                return RedirectToAction("YourEmployeesVacation","Vacations",new { Email });
+                
+            }
+            
+            return View(editedVacation);
+        }
        
 
 

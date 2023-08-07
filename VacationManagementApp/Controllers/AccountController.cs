@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using VacationManagementApp.Interfaces;
 using VacationManagementApp.Models;
 
 namespace VacationManagementApp.Controllers
 {
     public class AccountController : Controller
     {
-
+        //private readonly IUserService _userService;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<User> _signInManager;
@@ -15,8 +16,11 @@ namespace VacationManagementApp.Controllers
         public AccountController(
             UserManager<User> userManager,
             RoleManager<IdentityRole> roleManager,
-            SignInManager<User> signInManager)
+            SignInManager<User> signInManager
+            /*,IUserService userService*/)
+          
         {
+            //_userService = userService;
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
@@ -25,6 +29,7 @@ namespace VacationManagementApp.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+            //_userService.AddUser();
             return View();
         }
 

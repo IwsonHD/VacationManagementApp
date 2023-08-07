@@ -1,11 +1,11 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
-@model VacationManagementApp.Models.Vacation
+@model Vacation
 
 <h2>Add Vacation</h2>
 
-<form asp-action="Create" method="post">
+<form asp-action="EditState" method="post">
     <div class="form-group">
         <label asp-for="HowManyDays">How many days:</label>
         <input asp-for="HowManyDays" class="form-control" readonly />
@@ -29,7 +29,8 @@
         </select>
         <span asp-validation-for="state" class="text-danger"></span>
     </div>
+    <input type="hidden" asp-for="EmployeeId" />
 
-    <input type="submit" value="Add Vacation" class="btn btn-primary" />
+    <input type="submit" value="Edit Vacation" class="btn btn-primary" />
 </form>
 
