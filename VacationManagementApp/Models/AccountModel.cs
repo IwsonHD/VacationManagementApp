@@ -29,7 +29,7 @@ namespace VacationManagementApp.Models
 
         [Required]
         public string Role { get; set; }
-        public int? EmployersId { get; set; }
+        public string EmployersEmail { get; set; }
 
         public string CompanyName { get; set; }
     }

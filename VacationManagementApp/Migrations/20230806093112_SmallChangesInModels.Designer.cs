@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VacationManagementApp.DataBases;
 
@@ -11,9 +12,11 @@ using VacationManagementApp.DataBases;
 namespace VacationManagementApp.Migrations
 {
     [DbContext(typeof(VacationManagerDbContext))]
-    partial class VacationManagerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230806093112_SmallChangesInModels")]
+    partial class SmallChangesInModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

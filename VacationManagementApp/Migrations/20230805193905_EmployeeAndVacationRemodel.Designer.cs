@@ -12,8 +12,8 @@ using VacationManagementApp.DataBases;
 namespace VacationManagementApp.Migrations
 {
     [DbContext(typeof(VacationManagerDbContext))]
-    [Migration("20230803123614_EmplyeeEmployerVacationMig")]
-    partial class EmplyeeEmployerVacationMig
+    [Migration("20230805193905_EmployeeAndVacationRemodel")]
+    partial class EmployeeAndVacationRemodel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -247,19 +247,22 @@ namespace VacationManagementApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                    b.Property<string>("EmployeeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("HowManyDays")
                         .HasColumnType("int");
 
-                    b.Property<string>("WhereTo")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("When")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("state")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
 
                     b.ToTable("Vacations");
                 });
@@ -268,8 +271,9 @@ namespace VacationManagementApp.Migrations
                 {
                     b.HasBaseType("VacationManagementApp.Models.User");
 
-                    b.Property<int>("EmployersID")
-                        .HasColumnType("int");
+                    b.Property<string>("EmployersEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.ToTable("Employees", (string)null);
                 });
@@ -336,6 +340,17 @@ namespace VacationManagementApp.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("VacationManagementApp.Models.Vacation", b =>
+                {
+                    b.HasOne("VacationManagementApp.Models.Employee", "Employee")
+                        .WithMany("Vacations")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
             modelBuilder.Entity("VacationManagementApp.Models.Employee", b =>
                 {
                     b.HasOne("VacationManagementApp.Models.User", null)
@@ -352,6 +367,11 @@ namespace VacationManagementApp.Migrations
                         .HasForeignKey("VacationManagementApp.Models.Employer", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("VacationManagementApp.Models.Employee", b =>
+                {
+                    b.Navigation("Vacations");
                 });
 #pragma warning restore 612, 618
         }

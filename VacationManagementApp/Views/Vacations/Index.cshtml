@@ -1,0 +1,33 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    int nr = 1;
+}
+@model IEnumerable<Vacation>
+
+@if(User.Identity.IsAuthenticated){
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Nr.</th>
+                <th scope="col">How many days</th>
+                <th scope="col">When</th>
+                <th scope="col">State</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(Vacation vacation in Model)
+            {
+                <tr class="table-primary">
+                    <th scope="row">@nr</th>
+                    <td>@vacation.HowManyDays</td>
+                    <td>@vacation.When</td>
+                    <td>@vacation.state</td>
+                </tr>
+                nr++;
+            }
+        </tbody>
+    </table>
+    <a class="btn btn-primary float-end pe-2" asp-controller="Vacations" asp-action="Create" >Add Vacation </a>
+}

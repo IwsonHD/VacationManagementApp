@@ -29,8 +29,14 @@
                                 </a>
                             </li>
                             <li>
-                                <a class="nav-link active" asp-controller="Home" asp-action="HowToUse">
+                                <a class="nav-link active" asp-controller="Vacations" asp-action="Index">
                                     Your vacations
+                                    <span class="visually-hidden">(current)</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="nav-link active" asp-controller="Home" asp-action="YourData">
+                                    Your data
                                     <span class="visually-hidden">(current)</span>
                                 </a>
                             </li>
@@ -47,8 +53,14 @@
                                 </a>
                             </li>
                             <li>
-                                <a class="nav-link active" asp-controller="Home" asp-action="HowToUse">
-                                    Your vacations
+                                <a class="nav-link active" asp-controller="Home" asp-action="YourData">
+                                    Your data
+                                    <span class="visually-hidden">(current)</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="nav-link active" asp-controller="Home" asp-action="YourEmployees">
+                                    Your employees
                                     <span class="visually-hidden">(current)</span>
                                 </a>
                             </li>
@@ -67,11 +79,14 @@
                             </li>
 
                         </ul>
-                        <div class="pe-2">
+                        <div class="p-1">
                             <a class=" btn btn-secondary my-2 my-sm-0" asp-controller="Account" asp-action="Registration">Register</a>
                         </div>
-                        <a class=" btn btn-secondary my-2 my-sm-0" asp-controller="Account" asp-action="Login">Login</a>
+                        <div class="p-1">
+                            <a class=" btn btn-secondary my-2 my-sm-0" asp-controller="Account" asp-action="Login">Login</a>
 
+                        </div>
+                        
 
                     }
 

@@ -70,9 +70,24 @@ namespace VacationManagementApp.Controllers
                     return View(model);
                 }
 
+                bool does_exist = null != await _userManager.FindByEmailAsync(model.Email);
+
+                if (does_exist)
+                {
+                    ModelState.AddModelError("Email", "This e-mail address is allready taken");
+                    return View(model);
+                }
+
                 User newUser;
                 if(model.Role == "Employee")
                 {
+                    var doesEmployerExist = await _userManager.FindByEmailAsync(model.EmployersEmail);
+                    if (doesEmployerExist == null || await _userManager.IsInRoleAsync(doesEmployerExist, "Employee"))
+                    {
+                        ModelState.AddModelError("EmployersEmail", "There is no Employer with such email");
+                        return View(model);
+                    }
+
                     newUser = new Employee
                     {
                         UserName = model.Email,
@@ -81,7 +96,7 @@ namespace VacationManagementApp.Controllers
                         LastName = model.LastName,
                         PhoneNumber = model.PhoneNumber,
                         Email = model.Email,
-                        EmployersID = model.EmployersId
+                        EmployersEmail = model.EmployersEmail
                     };
 
                 }else
@@ -97,6 +112,7 @@ namespace VacationManagementApp.Controllers
                         CompanyName = model.CompanyName
                     };
                 }
+                
 
                 var result = await _userManager.CreateAsync(newUser, model.Password);
 

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VacationManagementApp.DataBases;
 
@@ -11,9 +12,11 @@ using VacationManagementApp.DataBases;
 namespace VacationManagementApp.Migrations
 {
     [DbContext(typeof(VacationManagerDbContext))]
-    partial class VacationManagerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230803235636_idToEmail")]
+    partial class idToEmail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -244,22 +247,19 @@ namespace VacationManagementApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("EmployeeId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
 
                     b.Property<int>("HowManyDays")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("When")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("WhereTo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("state")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
 
                     b.ToTable("Vacations");
                 });
@@ -337,17 +337,6 @@ namespace VacationManagementApp.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("VacationManagementApp.Models.Vacation", b =>
-                {
-                    b.HasOne("VacationManagementApp.Models.Employee", "Employee")
-                        .WithMany("Vacations")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-                });
-
             modelBuilder.Entity("VacationManagementApp.Models.Employee", b =>
                 {
                     b.HasOne("VacationManagementApp.Models.User", null)
@@ -364,11 +353,6 @@ namespace VacationManagementApp.Migrations
                         .HasForeignKey("VacationManagementApp.Models.Employer", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("VacationManagementApp.Models.Employee", b =>
-                {
-                    b.Navigation("Vacations");
                 });
 #pragma warning restore 612, 618
         }
