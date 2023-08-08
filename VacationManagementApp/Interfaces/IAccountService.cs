@@ -14,6 +14,7 @@ namespace VacationManagementApp.Interfaces
         /// <returns>true on success and false on failure</returns>
         public Task<bool> RegisterUser(RegisterDto model);
         public Task<bool> LoginUser(LoginDto model);
+        
     }
 
     
