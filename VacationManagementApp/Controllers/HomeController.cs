@@ -3,18 +3,17 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using VacationManagementApp.Models;
 using System.Linq;
+using VacationManagementApp.Interfaces;
 
 namespace VacationManagementApp.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly UserManager<User> _userManager;
 
-        public HomeController(ILogger<HomeController> logger, UserManager<User> userManager)
+        private readonly IHomeService _homeService;
+        public HomeController(IHomeService homeService,ILogger<HomeController> logger, UserManager<User> userManager)
         {
-            _logger = logger;
-            _userManager = userManager;
+            _homeService = homeService;
         }
 
         public IActionResult Index()
@@ -35,32 +34,19 @@ namespace VacationManagementApp.Controllers
 
         public async Task<IActionResult> YourData()
         {
-            if (User.Identity.IsAuthenticated)
+            var userData = await _homeService.ShowYourData();
+            if (userData != null)
             {
-                var userModel = await _userManager.GetUserAsync(User);
-                if(userModel != null)
-                {
-                    return View(userModel);
-                }
-                return NotFound();
+                return View(userData);
             }
-            else
-            {
-                return RedirectToAction("Index");
-            }
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> YourEmployees()
         {
             if (User.IsInRole("Employer"))
             {
-                var you = await _userManager.GetUserAsync(User);
-
-                IEnumerable<Employee> yourEmployees = _userManager.Users
-                    .OfType<Employee>()
-                    .Where(e => e.EmployersEmail == you.Email)
-                    .ToList();
-                return View(yourEmployees);
+                return View(await _homeService.ShowYourEmployees());
             }
             else
             {
