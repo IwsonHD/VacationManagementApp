@@ -5,74 +5,43 @@ using System.Security.Claims;
 using VacationManagementApp.DataBases;
 using VacationManagementApp.Models;
 using VacationManagementApp.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace VacationManagementApp.Controllers
 {
     public class VacationsController : Controller
     {
 
-        private readonly VacationManagerDbContext _db;
+        
         private readonly IVacationService _vacationService;
 
-        public VacationsController(VacationManagerDbContext db, IVacationService vacationService)
+        public VacationsController(IVacationService vacationService)
         {
-            _db = db;
+            
             _vacationService = vacationService;
         }
 
         [HttpGet]
         public IActionResult Index()
-        {
-            //var currUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            //IEnumerable<Vacation> userVacations = _db.Vacations
-            //    .Where(v => v.EmployeeId == currUserId)
-            //    .ToList();
-
-
-            return View(_vacationService.GetVacations());
+        { 
+            return View(_vacationService.GetVacations(User.FindFirstValue(ClaimTypes.NameIdentifier)));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Vacation vacation)
+        public IActionResult Create(Vacation vacation)
         {
-
-            if(await _vacationService.AddVacationToDb(vacation))
+            ModelState.Remove("Employee");
+            ModelState.Remove("EmployeeId");
+            vacation.EmployeeId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (ModelState.IsValid)
             {
+                _vacationService.AddVacationToDb(vacation);
                 return RedirectToAction("Index");
             }
+
+
             return View(vacation);
-
-
-
-
-
-
-
-
-            //vacation.EmployeeId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-
-            //if (ModelState.IsValid)
-            //{
-
-            //    Vacation newVacation = new Vacation
-            //    {
-            //        HowManyDays = vacation.HowManyDays,
-            //        EmployeeId = vacation.EmployeeId,
-            //        When = vacation.When,
-            //        state = Enums.VacationState.Waiting
-            //    };
-
-
-            //    await _db.Vacations.AddAsync(newVacation);
-            //    await _db.SaveChangesAsync();
-
-
-            //    return RedirectToAction("Index");
-            //}
-
-            //return View(vacation);
         
         }
 
@@ -88,27 +57,6 @@ namespace VacationManagementApp.Controllers
 
             return View(_vacationService.GetYoursEmployeeVacation(email));
 
-
-
-
-
-
-            //Employee? employee = _db.Employees.FirstOrDefault(e => e.Email == email);
-
-            //if (employee == null)
-            //{
-            //    return NotFound();
-            //}
-            //else
-            //{
-            //    IEnumerable<Vacation> employeesVacation = _db.Vacations
-            //        .Where(v => v.EmployeeId == employee.Id)
-            //        .ToList();
-
-
-            //    return View(employeesVacation);
-            //}
-
         }
 
         [HttpGet]
@@ -121,36 +69,25 @@ namespace VacationManagementApp.Controllers
             }
             return View(vacationsFromDb);
 
-
-
-            //if (Id == null || Id == 0)
-            //{
-            //    return NotFound();
-            //}
-
-            //var vacationFromDb = _db.Vacations.Find(Id);
-
-            //if(vacationFromDb == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //return View(vacationFromDb);
         }
 
 
         [HttpPost]
         public IActionResult EditState(Vacation editedVacation)
         {
-            string email = _vacationService.EditVacation(editedVacation);
+            ModelState.Remove("Employee");
 
-            if(email != null)
+            if (ModelState.IsValid)
             {
-                TempData["success"] = "State has been successfully updated";
-                return RedirectToAction("YourEmployeesVacation","Vacations",new { email });
+                string email = _vacationService.EditVacation(editedVacation);
+               if (email != null)
+                {
+                    TempData["success"] = "State has been successfully updated";
+                    return RedirectToAction("YourEmployeesVacation", "Vacations", new { email });
+                }
+                return View(editedVacation);
             }
             return View(editedVacation);
-
 
 
 

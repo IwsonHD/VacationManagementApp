@@ -23,31 +23,21 @@ namespace VacationManagementApp.Services
         }
 
 
-        public IEnumerable<Vacation> GetVacations()
-        {
-            var currentUser = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        public IEnumerable<Vacation> GetVacations(string? currentUserId)
+        { 
             var userVacations = _db.Vacations
-                .Where(v => v.EmployeeId == currentUser)
+                .Where(v => v.EmployeeId == currentUserId)
                 .ToList();
+
             return userVacations;
         }
 
-        public async Task<bool> AddVacationToDb(Vacation vacation)
+        public async void AddVacationToDb(Vacation vacation)
         {
-            vacation.EmployeeId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if(_actionContextAccessor.ActionContext.ModelState.IsValid)
-            {
-                await _db.Vacations.AddAsync(vacation);
-                await _db.SaveChangesAsync();
-
-                return true;
-
-            }
-            
-            return false;
-
-
+           await _db.Vacations.AddAsync(vacation);
+           _db.SaveChanges();             
+      
         }
 
 
@@ -74,21 +64,17 @@ namespace VacationManagementApp.Services
             if(id == null || id == 0) return null;
             return _db.Vacations.Find(id);
         }
-
+        //zwaliduj w kontrolerze za pomoca validatora a tutaj tylko dodam do bazy danch
         public string? EditVacation(Vacation editedVacation)
         {
-            _actionContextAccessor.ActionContext.ModelState.Remove("Employee");
+      
+            string Email = _db.Employees.SingleOrDefault(e => e.Id == editedVacation.EmployeeId).Email;
 
-            if (_actionContextAccessor.ActionContext.ModelState.IsValid)
-            {
-                string Email = _db.Employees.SingleOrDefault(e => e.Id == editedVacation.EmployeeId).Email;
-
-                _db.Vacations.Update(editedVacation);
-                _db.SaveChanges();
-                return Email;
-                
-            }
-            return null;
+            _db.Vacations.Update(editedVacation);
+            _db.SaveChanges();
+            return Email;
+            
+    
 
         }
 

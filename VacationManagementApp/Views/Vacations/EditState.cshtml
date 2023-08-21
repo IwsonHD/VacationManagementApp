@@ -17,20 +17,40 @@
         <input asp-for="When" class="form-control" readonly />
         <span asp-validation-for="When" class="text-danger"></span>
     </div>
-
-    <div class="form-group">
-        <label>State:</label>
-        <select asp-for="state" class="form-control">
-            <option value="0">Waiting</option>
-            <option value="1">Active</option>
-            <option value="2">Cancelled</option>
-            <option value="3">Expired</option>
-            <option value="4">Accepted</option>
-        </select>
-        <span asp-validation-for="state" class="text-danger"></span>
-    </div>
     <input type="hidden" asp-for="EmployeeId" />
 
-    <input type="submit" value="Edit Vacation" class="btn btn-primary" />
+   @* <div>
+        <label asp-for="state">State:</label>
+        <input asp-for="state" class="form-control" readonly />
+        <span asp-validation-for="state" class="text-danger"></span>
+    </div>*@
+
+
+
+
+    @if (Model.state is VacationManagementApp.Enums.VacationState.Waiting)
+    {
+        <div class="form-group">
+            <label>State:</label>
+            <select asp-for="state" class="form-control" >
+                <option value="0" disabled>Waiting</option>
+                @*<option value="1">Active</option>*@
+                <option value="2">Cancel</option>
+                @*<option value="3">Expired</option>*@
+                <option value="4">Accept</option>
+            </select>
+            <span asp-validation-for="state" class="text-danger"></span>
+        </div>
+        <input type="submit" value="Edit Vacation" class="btn btn-primary" />
+    }
+    else
+    {
+        <div>
+            <label asp-for="state">State:</label>
+            <input asp-for="state" class="form-control" readonly />
+            <span asp-validation-for="state" class="text-danger"></span>
+        </div>
+    }
+    
 </form>
 

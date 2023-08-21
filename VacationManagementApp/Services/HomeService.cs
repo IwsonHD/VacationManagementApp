@@ -31,18 +31,14 @@ namespace VacationManagementApp.Services
         public async Task<IEnumerable<Employee>>? ShowYourEmployees()
 
         {
-            if (_httpContextAccessor.HttpContext.User.IsInRole("Employer"))
-            {
-                var you = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
 
-                IEnumerable<Employee> yourEmployees = _userManager.Users
-                    .OfType<Employee>()
-                    .Where(e => e.EmployersEmail == you.Email)
-                    .ToList();
-                return yourEmployees;
+            var you = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
 
-            }
-            return null;
+            IEnumerable<Employee> yourEmployees = _userManager.Users
+                .OfType<Employee>()
+                .Where(e => e.EmployersEmail == you.Email)
+                .ToList();
+            return yourEmployees;
         }
 
 

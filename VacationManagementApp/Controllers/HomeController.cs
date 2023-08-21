@@ -9,11 +9,12 @@ namespace VacationManagementApp.Controllers
 {
     public class HomeController : Controller
     {
-
+        private readonly UserManager<User> _userManager;
         private readonly IHomeService _homeService;
-        public HomeController(IHomeService homeService,ILogger<HomeController> logger, UserManager<User> userManager)
+        public HomeController(IHomeService homeService,UserManager<User> userManager)
         {
             _homeService = homeService;
+            _userManager = userManager;
         }
 
         public IActionResult Index()
@@ -34,24 +35,23 @@ namespace VacationManagementApp.Controllers
 
         public async Task<IActionResult> YourData()
         {
-            var userData = await _homeService.ShowYourData();
-            if (userData != null)
+            if (!User.Identity.IsAuthenticated)
             {
-                return View(userData);
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
-        }
 
+            return View(await _userManager.GetUserAsync(User));
+        }
+        
         public async Task<IActionResult> YourEmployees()
         {
-            if (User.IsInRole("Employer"))
+            if (!User.IsInRole("Employer"))
             {
-                return View(await _homeService.ShowYourEmployees());
+                return RedirectToAction("Index");
             }
-            else
-            {
-                return RedirectToAction("Index"); 
-            }
+
+            return View(await _homeService.ShowYourEmployees());
+
         }
     }
 }

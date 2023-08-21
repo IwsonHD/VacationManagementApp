@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using VacationManagementApp.Dto;
 using VacationManagementApp.Interfaces;
 using VacationManagementApp.Models;
+using VacationManagementApp.Validators;
 
 namespace VacationManagementApp.Controllers
 {
@@ -25,6 +26,7 @@ namespace VacationManagementApp.Controllers
           //  _userManager = userManager;
             //_roleManager = roleManager;
             _signInManager = signInManager;
+
         }
 
         [HttpGet]
@@ -37,12 +39,26 @@ namespace VacationManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginDto model)
         {
+            if(!ModelState.IsValid) return View(model);
 
-            if(!await _accountService.LoginUser(model))
+            var serviceResult = await _accountService.LoginUser(model);
+
+            if (!serviceResult.Succeed)
             {
                 return View(model);
             }
+
             return RedirectToAction("Index", "home");
+
+
+
+
+
+            //if(!await _accountService.LoginUser(model))
+            //{
+            //    return View(model);
+            //}
+            //return RedirectToAction("Index", "home");
         }
 
 
@@ -60,12 +76,29 @@ namespace VacationManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Registration(RegisterDto model)
         {
-            if(!await _accountService.RegisterUser(model))
+            if (!ModelState.IsValid) {
+                return View(model);            
+            }
+
+
+            var serviceResult = await _accountService.RegisterUser(model);
+            serviceResult.ManageModelState(ModelState);
+
+            if (!serviceResult.Succeed)
             {
                 return View(model);
             }
+
             
+
             return RedirectToAction("Index", "Home");
+
+            //if(!await _accountService.RegisterUser(model))
+            //{
+            //    return View(model);
+            //}
+
+            //return RedirectToAction("Index", "Home");
 
         }
 
