@@ -16,7 +16,7 @@ namespace VacationManagementApp.Models
         public string EmployeeId { set; get; }
         public VacationState state { set; get; } = VacationState.Waiting;
         [Required]
-        [DataType(DataType.DateTime)]
+        [DataType(DataType.Date)]
         public DateTime When { set; get; }
         public Employee Employee { set; get; }
 

@@ -49,13 +49,12 @@ namespace VacationManagementApp.Services
             {
                 return null;
             }
-            
-          
-            IEnumerable<Vacation> employeesVacation = _db.Vacations
+
+            var employeesVacation = _db.Vacations
                 .Where(v => v.EmployeeId == employee.Id)
                 .ToList();
+
             return employeesVacation;
-            
         }
 
         public Vacation GetVacation(int? id)
