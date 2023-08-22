@@ -14,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IHomeService, HomeService>();
 builder.Services.AddScoped<IVacationService, VacationService>();
+builder.Services.AddScoped<IEmailServices, EmailServices>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
@@ -32,6 +33,7 @@ builder.Services.AddIdentity<User, IdentityRole>( o =>
     o.Password.RequireDigit = false;
     o.Password.RequireNonAlphanumeric = false;
     o.Password.RequireUppercase = false;
+    o.SignIn.RequireConfirmedEmail = false;
 })
     .AddEntityFrameworkStores<VacationManagerDbContext>()
     .AddDefaultTokenProviders();

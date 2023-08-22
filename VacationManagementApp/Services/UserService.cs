@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using VacationManagementApp.Dto;
 using VacationManagementApp.Validators;
+using System.Security.Policy;
 
 namespace VacationManagementApp.Services
 {
@@ -151,6 +152,12 @@ namespace VacationManagementApp.Services
             {
                 await _userManager.AddToRoleAsync(newUser, model.Role);
                 await _signInManager.SignInAsync(newUser, isPersistent: false);
+
+                var userId = newUser.Id;
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
+                serviceResult.AddResult(nameof(token), token);
+                serviceResult.AddResult(nameof(userId), userId);
+
                 return serviceResult;
 
             }

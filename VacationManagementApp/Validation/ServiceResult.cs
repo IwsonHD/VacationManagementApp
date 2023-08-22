@@ -6,11 +6,13 @@ namespace VacationManagementApp.Validators
     {
         private bool succeed;
         private Dictionary<string, string> dataWithErrors;
+        private Dictionary<string,string> additionResults; 
 
         public ServiceResult()
         {
             dataWithErrors = new Dictionary<string, string>();
             succeed = true;
+            additionResults = new Dictionary<string, string>();   
         }
 
         public void AddError(string issuedData, string message)
@@ -36,6 +38,16 @@ namespace VacationManagementApp.Validators
             {
                 return this.succeed;
             }
+        }
+
+        public void AddResult(string resultName, string resultValue)
+        {
+            additionResults.Add(resultName, resultValue);   
+        }
+
+        public string GetResult(string resultName)
+        {
+            return additionResults[resultName];
         }
 
 
