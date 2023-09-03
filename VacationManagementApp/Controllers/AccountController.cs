@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Org.BouncyCastle.Bcpg;
+using System.Runtime.InteropServices;
 using System.Text.Encodings.Web;
 using VacationManagementApp.Dto;
 using VacationManagementApp.Interfaces;
@@ -101,25 +103,26 @@ namespace VacationManagementApp.Controllers
                 return View("Error");
             }
 
-            var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = userId, token }, Request.Scheme);
+            var callbackUrl = Url.Action("ConfirmEmail", "Account", new {userId, token }, Request.Scheme);
 
             await _emailServices.SendEmail(model.Email, "Confirm your e-mail",
                  $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-            
-            //if(serviceResult.GetResult("isNewEmployee") == "true")
-            //{
-            //    var callbackUrlForEmployeeConfirmation = Url.Action("ConfirmEmployee", "Account", new {employeeId},Request.Scheme);
-            //}
+
+            if (serviceResult.GetResult("isNewEmployee") == "true")
+            {
+                var employeeToken = serviceResult.GetResult("employeeToken");
+                if (employeeToken == null) {
+                    return View("Error");
+                }
+                var callbackUrlForEmployeeConfirmation = Url.Action("ConfirmEmployee", "Account", new { userId,employeeToken }, Request.Scheme);
+                await _emailServices.SendEmail(model.EmployersEmail, "Confirm your new employee", $"If you recognize this e-mail {HtmlEncoder.Default.Encode(model.Email)}" +
+                    $" as your employee's e-mail please click <a href={HtmlEncoder.Default.Encode(callbackUrlForEmployeeConfirmation)}>here</a>.");
+            }
 
 
             return RedirectToAction("PostRegister");
 
-            //if(!await _accountService.RegisterUser(model))
-            //{
-            //    return View(model);
-            //}
-
-            //return RedirectToAction("Index", "Home");
+      
 
         }
         [HttpGet]
@@ -144,8 +147,20 @@ namespace VacationManagementApp.Controllers
             TempData["success"] = "Email has been succeesfully confirmed";
             return RedirectToAction("Index", "Home");
         }
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmployee(string userId, string employeeToken)
+        {
+            if(! await _accountService.ConfirmEmployee(userId, employeeToken)) { 
+                return View("Error");
+            }
+            TempData["success"] = "Your new employee has beem comfirmed";
+            return View();
+        }
+        [HttpGet]
+        public IActionResult EmployeeNotConfirmed() {
+            return View();
+        }
 
-        
 
     }
     

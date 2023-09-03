@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VacationManagementApp.DataBases;
 
@@ -11,9 +12,11 @@ using VacationManagementApp.DataBases;
 namespace VacationManagementApp.Migrations
 {
     [DbContext(typeof(VacationManagerDbContext))]
-    partial class VacationManagerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230903134542_DBupdateToMatchPostPull")]
+    partial class DBupdateToMatchPostPull
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -274,10 +277,6 @@ namespace VacationManagementApp.Migrations
 
                     b.Property<bool>("IsConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.ToTable("Employees", (string)null);
                 });

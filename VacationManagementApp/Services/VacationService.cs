@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using VacationManagementApp.DataBases;
 using VacationManagementApp.Interfaces;
@@ -23,8 +24,14 @@ namespace VacationManagementApp.Services
         }
 
 
-        public IEnumerable<Vacation> GetVacations(string? currentUserId)
+        public IEnumerable<Vacation>? GetVacations(string? currentUserId)
         { 
+            var user = _db.Employees.FirstOrDefault(u => u.Id == currentUserId);   
+
+            if (user == null || !user.IsConfirmed) {
+                return null;
+            }
+
             var userVacations = _db.Vacations
                 .Where(v => v.EmployeeId == currentUserId)
                 .ToList();

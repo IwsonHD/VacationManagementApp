@@ -23,8 +23,14 @@ namespace VacationManagementApp.Controllers
 
         [HttpGet]
         public IActionResult Index()
-        { 
-            return View(_vacationService.GetVacations(User.FindFirstValue(ClaimTypes.NameIdentifier)));
+        {
+            var vacations = _vacationService.GetVacations(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if(vacations == null)
+            {
+                return RedirectToAction("EmployeeNotConfirmed","Account");
+            }
+
+			return View(vacations);
         }
 
         [HttpPost]

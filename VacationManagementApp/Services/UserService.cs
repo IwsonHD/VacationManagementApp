@@ -8,12 +8,14 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using VacationManagementApp.Dto;
 using VacationManagementApp.Validators;
 using System.Security.Policy;
+using VacationManagementApp.DataBases;
+using Microsoft.EntityFrameworkCore;
 
 namespace VacationManagementApp.Services
 {
     public class AccountService : IAccountService
     {
-
+        private readonly VacationManagerDbContext _db;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<User> _signInManager;
@@ -21,9 +23,11 @@ namespace VacationManagementApp.Services
 
         public AccountService(UserManager<User> userManager,
             RoleManager<IdentityRole> roleManager,
-            SignInManager<User> signInManager
+            SignInManager<User> signInManager,
+            VacationManagerDbContext db
             /*IActionContextAccessor actionContextAccessor*/)
         {
+            _db = db;
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
@@ -98,7 +102,7 @@ namespace VacationManagementApp.Services
 
 
 
-
+            Guid? employeeToken = null;
             User newUser;
 
             if(model.Role == "Employee")
@@ -110,6 +114,7 @@ namespace VacationManagementApp.Services
                     serviceResult.AddError(nameof(model.EmployersEmail), "There is no Employer with such email");
                     return serviceResult;
                 }
+                employeeToken = Guid.NewGuid();
 
                 newUser = new Employee()
                 {
@@ -119,7 +124,8 @@ namespace VacationManagementApp.Services
                     LastName = model.LastName,
                     PhoneNumber = model.PhoneNumber,
                     Email = model.Email,
-                    EmployersEmail = model.EmployersEmail
+                    EmployersEmail = model.EmployersEmail,
+                    Token = employeeToken.ToString()
                 };
 
 
@@ -168,7 +174,13 @@ namespace VacationManagementApp.Services
 
                 if(model.Role == "Employee")
                 {
+                    serviceResult.AddResult(nameof(employeeToken), employeeToken.ToString());
                     serviceResult.AddResult("isNewEmployee", "true");
+                }
+                else
+                {
+                    serviceResult.AddResult(nameof(employeeToken), employeeToken.ToString());
+                    serviceResult.AddResult("isNewEmployee", "false");
                 }
 
                 return serviceResult;
@@ -181,78 +193,37 @@ namespace VacationManagementApp.Services
             return serviceResult;
 
 
-
-
-                //var nzw = nameof (LoginDto.Email)
-                //if (_actionContextAccessor.ActionContext.ModelState.IsValid)
-                //{
-                //    if (!await _roleManager.RoleExistsAsync(model.Role)) return false;
-
-
-                //    bool does_exist = null != await _userManager.FindByEmailAsync(model.Email);
-
-                //    if (does_exist)
-                //    {
-                //        _actionContextAccessor.ActionContext.ModelState.AddModelError("Email", "This e-mail address is allready taken");
-                //        return false;
-                //    }
-
-                //    User newUser;
-
-                //    if (model.Role == "Employee")
-                //    {
-                //        var doesEmployeeExist = await _userManager.FindByEmailAsync(model.EmployersEmail);
-
-                //        if (doesEmployeeExist == null || await _userManager.IsInRoleAsync(doesEmployeeExist, "Employee"))
-                //        {
-                //            _actionContextAccessor.ActionContext.ModelState.AddModelError("EmployersEmail", "There is no Employer with such email");
-                //            return false;
-                //        }
-
-                //        newUser = new Employee
-                //        {
-                //            UserName = model.Email,
-                //            EmailAddress = model.Email,
-                //            FirstName = model.FirstName,
-                //            LastName = model.LastName,
-                //            PhoneNumber = model.PhoneNumber,
-                //            Email = model.Email,
-                //            EmployersEmail = model.EmployersEmail
-                //        };
-                //    }
-                //    else
-                //    {
-                //        newUser = new Employer
-                //        {
-                //            UserName = model.Email,
-                //            FirstName = model.FirstName,
-                //            EmailAddress = model.Email,
-                //            LastName = model.LastName,
-                //            PhoneNumber = model.PhoneNumber,
-                //            Email = model.Email,
-                //            CompanyName = model.CompanyName
-                //        };
-                //    }
-
-                //    var result = await _userManager.CreateAsync(newUser, model.Password);
-
-                //    if (result.Succeeded)
-                //    {
-                //        await _userManager.AddToRoleAsync(newUser, model.Role);
-                //        await _signInManager.SignInAsync(newUser, isPersistent: false);
-                //        return true;
-                //    }
-                //    foreach (var error in result.Errors)
-                //    {
-                //        _actionContextAccessor.ActionContext.ModelState.AddModelError(string.Empty, error.Description);
-                //    }
-
-
-
-                //    return false;
-                //}
-                //return false;
         }
+
+
+        public async Task<bool> ConfirmEmployee(string userId, string token)
+        {
+            if (userId == null || token == null)
+            {
+                return false;
+            }
+
+            var user = await _db.Employees.FirstOrDefaultAsync(emp => emp.Id == userId);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            if(user.Token != token)
+            {
+                return false;
+            }
+
+
+            user.IsConfirmed = true;
+            _db.Employees.Update(user);
+            await _db.SaveChangesAsync();
+            return true;
+
+
+        }
+
 
     }
 }

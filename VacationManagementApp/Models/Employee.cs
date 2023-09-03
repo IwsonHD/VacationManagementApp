@@ -11,6 +11,7 @@ namespace VacationManagementApp.Models
         public string EmployersEmail { get; set; } 
         public ICollection<Vacation>? Vacations { get; set; }
         public bool IsConfirmed { get; set; } = false;
+        public string Token { get; set; }
         
     }
 
