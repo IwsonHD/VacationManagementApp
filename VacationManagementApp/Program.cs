@@ -33,7 +33,7 @@ builder.Services.AddIdentity<User, IdentityRole>( o =>
     o.Password.RequireDigit = false;
     o.Password.RequireNonAlphanumeric = false;
     o.Password.RequireUppercase = false;
-    o.SignIn.RequireConfirmedEmail = false;
+    o.SignIn.RequireConfirmedEmail = true;
 })
     .AddEntityFrameworkStores<VacationManagerDbContext>()
     .AddDefaultTokenProviders();

@@ -39,8 +39,16 @@ namespace VacationManagementApp.Services
             {
                 return serviceResult;
             }
+            else if(result.IsNotAllowed)
+            {
+                serviceResult.AddError(string.Empty, "Confirm your e-mail to access your account");
+            }
+            else
+            {
+                serviceResult.AddError(string.Empty, "Wrong password or login!");
+            }
 
-            serviceResult.AddError(string.Empty, "Wrong password or login!");
+            
             return serviceResult;
 
             
@@ -151,12 +159,17 @@ namespace VacationManagementApp.Services
             if(result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(newUser, model.Role);
-                await _signInManager.SignInAsync(newUser, isPersistent: false);
+                //await _signInManager.SignInAsync(newUser, isPersistent: false);
 
                 var userId = newUser.Id;
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
                 serviceResult.AddResult(nameof(token), token);
                 serviceResult.AddResult(nameof(userId), userId);
+
+                if(model.Role == "Employee")
+                {
+                    serviceResult.AddResult("isNewEmployee", "true");
+                }
 
                 return serviceResult;
 

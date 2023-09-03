@@ -30,7 +30,7 @@ namespace VacationManagementApp.Services
             _configuration = configuration;
         }
 
-        public async Task SendEmailConfirmationAsync(string email, string title, string message)
+        public async Task SendEmail(string email, string title, string message)
         {
             var emailSettings = _configuration.GetSection("EmailSettings").Get<EmailSettings>();
 
@@ -78,5 +78,6 @@ namespace VacationManagementApp.Services
              
         }
 
+  
     }
 }

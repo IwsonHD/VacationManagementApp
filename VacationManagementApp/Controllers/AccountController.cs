@@ -49,6 +49,7 @@ namespace VacationManagementApp.Controllers
 
             if (!serviceResult.Succeed)
             {
+                serviceResult.ManageModelState(ModelState);
                 return View(model);
             }
 
@@ -102,12 +103,16 @@ namespace VacationManagementApp.Controllers
 
             var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = userId, token }, Request.Scheme);
 
-            await _emailServices.SendEmailConfirmationAsync(model.Email, "Confirm your e-mail",
+            await _emailServices.SendEmail(model.Email, "Confirm your e-mail",
                  $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+            
+            //if(serviceResult.GetResult("isNewEmployee") == "true")
+            //{
+            //    var callbackUrlForEmployeeConfirmation = Url.Action("ConfirmEmployee", "Account", new {employeeId},Request.Scheme);
+            //}
 
 
-
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("PostRegister");
 
             //if(!await _accountService.RegisterUser(model))
             //{
@@ -116,6 +121,11 @@ namespace VacationManagementApp.Controllers
 
             //return RedirectToAction("Index", "Home");
 
+        }
+        [HttpGet]
+        public IActionResult PostRegister() 
+        {
+            return View();        
         }
 
         public async Task<IActionResult> Logout()

@@ -17,5 +17,6 @@ namespace VacationManagementApp.Models
         [StringLength(9)]
         [DataType(DataType.PhoneNumber)]
         public string PhoneNumber { get; set; }
+
     }
 }
