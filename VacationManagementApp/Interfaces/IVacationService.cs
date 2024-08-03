@@ -1,4 +1,5 @@
 ﻿using VacationManagementApp.Models;
+using VacationManagementApp.Dto;
 
 namespace VacationManagementApp.Interfaces
 {
@@ -6,7 +7,7 @@ namespace VacationManagementApp.Interfaces
     {
         IEnumerable<Vacation> GetVacations();
 
-        Task<bool> AddVacationToDb(Vacation vacation);
+        Task<bool> AddVacationToDb(VacationDto vacation);
         IEnumerable<Vacation> GetYoursEmployeeVacation(string email);
         Vacation GetVacation(int? id);
         string EditVacation(Vacation editedVacation);

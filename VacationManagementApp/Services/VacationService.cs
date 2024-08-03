@@ -3,6 +3,7 @@ using System.Security.Claims;
 using VacationManagementApp.DataBases;
 using VacationManagementApp.Interfaces;
 using VacationManagementApp.Models;
+using VacationManagementApp.Dto;
 
 namespace VacationManagementApp.Services
 {
@@ -31,22 +32,27 @@ namespace VacationManagementApp.Services
             return userVacations;
         }
 
-        public async Task<bool> AddVacationToDb(Vacation vacation)
+        public async Task<bool> AddVacationToDb(VacationDto vacationDto)
         {
-            vacation.EmployeeId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if(_actionContextAccessor.ActionContext.ModelState.IsValid)
+            
+            Vacation vacation = new Vacation
             {
+                HowManyDays = vacationDto.HowManyDays,
+                When = vacationDto.When,
+                EmployeeId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)
+            };
+
+            
+            if (_actionContextAccessor.ActionContext.ModelState.IsValid)
+            {
+                
                 await _db.Vacations.AddAsync(vacation);
                 await _db.SaveChangesAsync();
 
                 return true;
-
             }
-            
+
             return false;
-
-
         }
 
 

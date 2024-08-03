@@ -119,8 +119,6 @@ namespace VacationManagementApp.Services
                     _actionContextAccessor.ActionContext.ModelState.AddModelError(string.Empty, error.Description);
                 }
 
-
-
                 return false;
             }
             return false;

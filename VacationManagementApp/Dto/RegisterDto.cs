@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using VacationManagementApp.Validation;
 
 namespace VacationManagementApp.Dto
 {
@@ -29,8 +30,9 @@ namespace VacationManagementApp.Dto
 
         [Required]
         public string Role { get; set; }
-        public string EmployersEmail { get; set; }
-
-        public string CompanyName { get; set; }
+        [RequiredIf(nameof(Role), "Employee")]
+        public string? EmployersEmail { get; set; }
+        [RequiredIf(nameof(Role),"Employer")]
+        public string? CompanyName { get; set; }
     }
 }

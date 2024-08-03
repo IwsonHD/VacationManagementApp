@@ -5,6 +5,7 @@ using System.Security.Claims;
 using VacationManagementApp.DataBases;
 using VacationManagementApp.Models;
 using VacationManagementApp.Interfaces;
+using VacationManagementApp.Dto;
 
 namespace VacationManagementApp.Controllers
 {
@@ -34,7 +35,7 @@ namespace VacationManagementApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Vacation vacation)
+        public async Task<IActionResult> Create(VacationDto vacation)
         {
 
             if(await _vacationService.AddVacationToDb(vacation))
