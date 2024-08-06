@@ -10,6 +10,7 @@ namespace VacationManagementApp.Models
         [DataType(DataType.EmailAddress)]
         public string EmployersEmail {  get; set; }
         public ICollection<Vacation> Vacations { get; set; }
+        public bool EmployeeConfirmed { get; set; } 
         
     }
 

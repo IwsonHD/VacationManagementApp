@@ -18,18 +18,19 @@
             </tr>
         </thead>
         <tbody>
-            @foreach(Employee emp in Model)
+            @foreach (Employee emp in Model)
             {
                 <tr class="table-primary">
                     <th scope="row">@nr</th>
                     <td>@emp.Email</td>
-                    <td><a class="btn btn-primary btn-warning" asp-controller="Vacations" asp-action="YourEmployeesVacation" asp-route-Email="@emp.Email">Vacations</a></td>
+                    <td><a class="btn btn-primary btn-warning" asp-controller="Account" asp-action="AcceptNewEmployee" asp-route-Email="@emp.Email">Accept</a></td>
+                    <td><a class="btn btn-primary btn-warning" asp-controller="Account" asp-action="DenyNewEmployee" asp-route-Email="@emp.Email">Deny</a></td>
                 </tr>
-                
+
                 nr++;
             }
         </tbody>
     </table>
 
-    <a class="btn btn-primary btn-warning" asp-controller="Home" asp-action="NewEmployees">New Employees</a>
+    
 }

@@ -12,8 +12,8 @@ namespace VacationManagementApp.Models
         public string FirstName { get; set; }
         [Required]
         public string LastName { get; set; }
-        [Required]
-        public string EmailAddress { get; set; }
+        //[Required]
+        //public string EmailAddress { get; set; }
 
         [Required]
         [StringLength(9)]

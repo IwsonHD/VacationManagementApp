@@ -12,8 +12,8 @@ using VacationManagementApp.DataBases;
 namespace VacationManagementApp.Migrations
 {
     [DbContext(typeof(VacationManagerDbContext))]
-    [Migration("20230806140629_changeUserKeyToStringType")]
-    partial class changeUserKeyToStringType
+    [Migration("20240805111616_AddedConfirmationProperty")]
+    partial class AddedConfirmationProperty
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -174,10 +174,6 @@ namespace VacationManagementApp.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("EmailAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
@@ -270,6 +266,9 @@ namespace VacationManagementApp.Migrations
             modelBuilder.Entity("VacationManagementApp.Models.Employee", b =>
                 {
                     b.HasBaseType("VacationManagementApp.Models.User");
+
+                    b.Property<bool>("EmployeeConfirmed")
+                        .HasColumnType("bit");
 
                     b.Property<string>("EmployersEmail")
                         .IsRequired()

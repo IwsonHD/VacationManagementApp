@@ -1,4 +1,5 @@
-﻿using VacationManagementApp.Models;
+﻿using VacationManagementApp.AssistanceClasses;
+using VacationManagementApp.Models;
 
 namespace VacationManagementApp.Interfaces
 {
@@ -7,6 +8,8 @@ namespace VacationManagementApp.Interfaces
         Task<User>? ShowYourData();
 
         Task<IEnumerable<Employee>>? ShowYourEmployees();
+
+        Task<ServiceResult<IEnumerable<Employee>>>? ShowNewEmployees();
 
     }
 }

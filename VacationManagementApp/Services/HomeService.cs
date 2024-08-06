@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using VacationManagementApp.AssistanceClasses;
 using VacationManagementApp.Interfaces;
 using VacationManagementApp.Models;
 
@@ -38,6 +39,7 @@ namespace VacationManagementApp.Services
                 IEnumerable<Employee> yourEmployees = _userManager.Users
                     .OfType<Employee>()
                     .Where(e => e.EmployersEmail == you.Email)
+                    .Where(e => e.EmployeeConfirmed)
                     .ToList();
                 return yourEmployees;
 
@@ -45,6 +47,24 @@ namespace VacationManagementApp.Services
             return null;
         }
 
+        public async Task<ServiceResult<IEnumerable<Employee>>>? ShowNewEmployees()
+        {
+            ServiceResult<IEnumerable<Employee>> serviceResult = new ServiceResult<IEnumerable<Employee>>(); 
+            var you = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+            if(you == null)
+            {
+                serviceResult.AppendError(string.Empty, "Your employer does not exist contact the help center");
+                return serviceResult;
+            }
+            serviceResult.Data = _userManager.Users
+                .OfType<Employee>()
+                .Where(e => e.EmployersEmail == you.Email)
+                .Where(e => !e.EmployeeConfirmed)
+                .ToList();
+            return serviceResult;
+
+        }    
+            
 
 
     }

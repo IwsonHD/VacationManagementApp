@@ -53,5 +53,21 @@ namespace VacationManagementApp.Controllers
                 return RedirectToAction("Index"); 
             }
         }
+        public async Task<IActionResult> NewEmployees()
+        {
+            if (!User.IsInRole("Employer"))
+            {
+                return RedirectToAction("Index");
+            }
+            
+            var serviceResult = await _homeService.ShowNewEmployees();
+
+            if (!serviceResult.Succeed)
+            {
+                return RedirectToAction("Error");
+            }
+
+            return View(serviceResult.Data);
+        }
     }
 }

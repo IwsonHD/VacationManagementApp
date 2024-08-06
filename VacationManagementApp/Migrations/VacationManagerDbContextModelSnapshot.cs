@@ -171,10 +171,6 @@ namespace VacationManagementApp.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("EmailAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
@@ -267,6 +263,9 @@ namespace VacationManagementApp.Migrations
             modelBuilder.Entity("VacationManagementApp.Models.Employee", b =>
                 {
                     b.HasBaseType("VacationManagementApp.Models.User");
+
+                    b.Property<bool>("EmployeeConfirmed")
+                        .HasColumnType("bit");
 
                     b.Property<string>("EmployersEmail")
                         .IsRequired()

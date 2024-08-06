@@ -12,8 +12,8 @@ using VacationManagementApp.DataBases;
 namespace VacationManagementApp.Migrations
 {
     [DbContext(typeof(VacationManagerDbContext))]
-    [Migration("20230805193905_EmployeeAndVacationRemodel")]
-    partial class EmployeeAndVacationRemodel
+    [Migration("20240803143250_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

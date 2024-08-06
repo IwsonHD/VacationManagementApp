@@ -7,6 +7,7 @@ namespace VacationManagementApp.Dto
     {
         [Required]
         [EmailAddress]
+        
         public string Email { get; set; }
 
         [Required]
