@@ -18,8 +18,9 @@ builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-builder.Services.AddDbContext<VacationManagerDbContext>(options => options.UseSqlServer(
-    builder.Configuration.GetConnectionString("DefaultConnection")
+builder.Services.AddDbContext<VacationManagerDbContext>(
+    options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+    options => options.MigrationsAssembly("BusinessLogic")
     ));
 //builder.Services.AddDistributedMemoryCache();
 //builder.Services.AddSession(options =>

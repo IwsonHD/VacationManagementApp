@@ -13,13 +13,11 @@ namespace VacationManagementApp.Controllers
     {
         private readonly IAccountService _accountService;
         private readonly UserManager<User> _userManager;
-      //  private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailService _emailService;
 
         public AccountController(
             UserManager<User> userManager,
-            //RoleManager<IdentityRole> roleManager,
             SignInManager<User> signInManager,
             IAccountService userService,
             IEmailService emailService)

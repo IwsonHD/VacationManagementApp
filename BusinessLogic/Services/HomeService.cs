@@ -11,12 +11,11 @@ namespace BusinessLogic.Services
     {
         private readonly UserManager<User> _userManager;
         private IHttpContextAccessor _httpContextAccessor;
-        public HomeService(
-            UserManager<User> userManager,
-            IHttpContextAccessor httpContextAccessor
-            ) { _userManager = userManager;
-                _httpContextAccessor = httpContextAccessor;
-            }
+        public HomeService(UserManager<User> userManager, IHttpContextAccessor httpContextAccessor) 
+        { 
+            _userManager = userManager;
+            _httpContextAccessor = httpContextAccessor;
+        }
 
         public async Task<User>? ShowYourData()
         {
