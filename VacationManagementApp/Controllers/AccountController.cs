@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using VacationManagementApp.Dto;
-using VacationManagementApp.Interfaces;
-using VacationManagementApp.Models;
-using VacationManagementApp.Services;
+using BusinessLogic.DTOs;
+using BusinessLogic.Interfaces;
+using BusinessLogic.Models;
+using BusinessLogic.Services;
 
 namespace VacationManagementApp.Controllers
 {

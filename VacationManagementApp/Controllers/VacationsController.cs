@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using VacationManagementApp.DataBases;
-using VacationManagementApp.Models;
-using VacationManagementApp.Interfaces;
-using VacationManagementApp.Dto;
+using BusinessLogic.DataBasesContext;
+using BusinessLogic.Models;
+using BusinessLogic.Interfaces;
+using BusinessLogic.DTOs;
 
 namespace VacationManagementApp.Controllers
 {

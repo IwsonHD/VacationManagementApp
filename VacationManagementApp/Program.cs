@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using VacationManagementApp.DataBases;
-using VacationManagementApp.Interfaces;
-using VacationManagementApp.Models;
-using VacationManagementApp.Services;
+using BusinessLogic.DataBasesContext;
+using BusinessLogic.Interfaces;
+using BusinessLogic.Models;
+using BusinessLogic.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,6 +44,7 @@ builder.Services.AddIdentity<User, IdentityRole>( o =>
 
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

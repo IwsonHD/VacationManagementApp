@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using VacationManagementApp.Models;
+using BusinessLogic.Models;
 using System.Linq;
-using VacationManagementApp.Interfaces;
+using BusinessLogic.Interfaces;
 
 namespace VacationManagementApp.Controllers
 {
