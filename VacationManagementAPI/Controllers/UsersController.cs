@@ -7,7 +7,7 @@ namespace VacationManagementAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class UsersController : Controller
     {
         private readonly IUserRepository _userRepository;
 
@@ -30,7 +30,7 @@ namespace VacationManagementAPI.Controllers
         }
 
         // Trasa do akcji będzie 'api/employer/{employeeEmail}'
-        [HttpGet("employer/{employerEmial}")]
+        [HttpGet("employer/{employerEmail}")]
         [ProducesResponseType(200, Type = typeof(Employer))]
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetEmployer(string employerEmail)

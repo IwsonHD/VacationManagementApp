@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using BusinessLogic.Enums;
 
 namespace BusinessLogic.Models
@@ -18,6 +19,7 @@ namespace BusinessLogic.Models
         [Required]
         [DataType(DataType.DateTime)]
         public DateTime When { set; get; }
+        [JsonIgnore]
         public Employee Employee { set; get; }
 
 

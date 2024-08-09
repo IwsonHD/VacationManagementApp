@@ -2,6 +2,7 @@
 using BusinessLogic.Interfaces;
 using BusinessLogic.Models;
 using Microsoft.EntityFrameworkCore;
+using BusinessLogic.DTOs;   
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,20 +21,38 @@ namespace BusinessLogic.Services
         }
 
 
-        public async Task<Employee?> GetEmployeeByEmailAsync(string email)
+        public async Task<EmployeeDTO?> GetEmployeeByEmailAsync(string email)
         {
             var employee = await _db.Employees.FirstOrDefaultAsync(emp => emp.Email == email);
-            
-            return employee;
+            var employeeDTO = new EmployeeDTO
+            {
+                Email = employee.Email,
+                FirstName = employee.FirstName,
+                LastName = employee.LastName,
+                PhoneNumber = employee.PhoneNumber,
+                Role = "Employee",
+                EmployersEmail = employee.EmployersEmail
+            };
+            return employeeDTO;
         }
 
-        public async Task<Employer?> GetEmployerByEmailAsync(string email)
+        public async Task<EmployerDTO?> GetEmployerByEmailAsync(string email)
         {
             var employer = await _db.Employers.FirstOrDefaultAsync(employee => employee.Email == email);   
+            var employerDTO = new EmployerDTO
+            {
+                Email = employer.Email,
+                CompanyName = employer.CompanyName,
+                PhoneNumber = employer.PhoneNumber,
+                Role = "Employer",
+                FirstName = employer.FirstName,
+                LastName = employer.LastName
+            };
 
-            return employer;
+            return employerDTO;
         }   
 
+        
 
 
 

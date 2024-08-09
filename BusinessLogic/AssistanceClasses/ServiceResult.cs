@@ -15,9 +15,11 @@ namespace BusinessLogic.AssistanceClasses
         public Dictionary<string, string> Errors { get; set; }
         public T? Data { get; set; }
 
+
         public ServiceResult()
         {
             Errors = new Dictionary<string, string>();
+            
         }
 
         public void UpdateModelError(ModelStateDictionary modelState)

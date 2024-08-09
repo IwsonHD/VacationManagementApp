@@ -30,9 +30,24 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 */
 
 
+//cors policy
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ClientAPI",
+        policy =>
+        {
+            var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
+            policy.WithOrigins(allowedOrigins)
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
 
 var app = builder.Build();
+
+app.UseCors("ClientAPI");
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
