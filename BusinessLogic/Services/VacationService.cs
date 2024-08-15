@@ -72,6 +72,7 @@ namespace BusinessLogic.Services
             if (employee == null)
             {
                 serviceResult.AppendError(String.Empty, "No such employee exists");
+                return serviceResult;
             }
             
           
@@ -99,15 +100,19 @@ namespace BusinessLogic.Services
         public ServiceResult<string> EditVacation(Vacation editedVacation)
         {
             var serviceResult = new ServiceResult<string>();
-            if (_actionContextAccessor.ActionContext.ModelState.IsValid)
+
+            string Email = _db.Employees.SingleOrDefault(e => e.Id == editedVacation.EmployeeId).Email;
+
+            if (Email == null)
             {
-                string Email = _db.Employees.SingleOrDefault(e => e.Id == editedVacation.EmployeeId).Email;
-                serviceResult.Data = Email;
-                _db.Vacations.Update(editedVacation);
-                _db.SaveChanges();
+                serviceResult.AppendError(String.Empty, "Unknown user error");
                 return serviceResult;
-                
             }
+            serviceResult.Data = Email;
+            _db.Vacations.Update(editedVacation);
+            _db.SaveChanges();
+            
+
             return serviceResult;
 
         }

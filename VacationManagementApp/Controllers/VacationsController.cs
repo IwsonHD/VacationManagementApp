@@ -28,9 +28,12 @@ namespace VacationManagementApp.Controllers
             //IEnumerable<Vacation> userVacations = _db.Vacations
             //    .Where(v => v.EmployeeId == currUserId)
             //    .ToList();
+            var serviceResult = _vacationService.GetVacations();
 
+            if(!serviceResult.Succeed)
+                return NotFound();
 
-            return View(_vacationService.GetVacations());
+            return View(serviceResult.Data);
         }
 
         [HttpPost]
@@ -60,8 +63,15 @@ namespace VacationManagementApp.Controllers
 
         public IActionResult YourEmployeesVacation(string email)
         {
+            var serviceResult = _vacationService.GetYoursEmployeeVacation(email);
 
-            return View(_vacationService.GetYoursEmployeeVacation(email));
+            if (!serviceResult.Succeed)
+            {
+                return NotFound();
+            }
+
+
+            return View(serviceResult.Data);
 
 
 
@@ -89,12 +99,12 @@ namespace VacationManagementApp.Controllers
         [HttpGet]
         public IActionResult EditState(int? Id)
         {
-            var vacationsFromDb = _vacationService.GetVacation(Id);
-            if (vacationsFromDb == null)
+            var serviceResult = _vacationService.GetVacation(Id);
+            if (!serviceResult.Succeed)
             {
                 return NotFound();
             }
-            return View(vacationsFromDb);
+            return View(serviceResult.Data);
 
 
 
@@ -126,7 +136,10 @@ namespace VacationManagementApp.Controllers
             }
 
             TempData["success"] = "State has been successfully updated";
-            return RedirectToAction("YourEmployeesVacation", "Vacations", new { serviceResult.Data });
+            
+            var email = serviceResult.Data;
+
+            return RedirectToAction("YourEmployeesVacation", "Vacations", new { email });
 
 
 
