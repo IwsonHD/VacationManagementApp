@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System;
-using System.Collections.Generic;
+
 
 namespace BusinessLogic.AssistanceClasses
 {
@@ -32,7 +31,7 @@ namespace BusinessLogic.AssistanceClasses
 
         public void AppendError(string key, string value)
         {
-            Errors.Add(key, value);
+            Errors.TryAdd(key, value);  
             Succeed = false; // This ensures that Succeed is updated when an error is added
         }
     }

@@ -5,6 +5,7 @@ using BusinessLogic.Interfaces;
 using BusinessLogic.Models;
 using BusinessLogic.DTOs;
 using Microsoft.AspNetCore.Http;
+using BusinessLogic.AssistanceClasses;
 
 namespace BusinessLogic.Services
 {
@@ -24,18 +25,29 @@ namespace BusinessLogic.Services
         }
 
 
-        public IEnumerable<Vacation> GetVacations()
+        public ServiceResult<IEnumerable<Vacation>> GetVacations()
         {
             var currentUser = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var serviceResult = new ServiceResult<IEnumerable<Vacation>>();
+
+            if (currentUser == null)
+            {
+                serviceResult.AppendError(String.Empty, "No such user exists");
+                return serviceResult;
+            }
+            
             var userVacations = _db.Vacations
                 .Where(v => v.EmployeeId == currentUser)
                 .ToList();
-            return userVacations;
+            serviceResult.Data = userVacations;
+
+
+            return serviceResult;
         }
 
-        public async Task<bool> AddVacationToDb(VacationDto vacationDto)
+        public async Task<ServiceResult<bool>> AddVacationToDb(VacationDto vacationDto)
         {
-            
+            var serviceResult = new ServiceResult<bool>();  
             Vacation vacation = new Vacation
             {
                 HowManyDays = vacationDto.HowManyDays,
@@ -43,58 +55,60 @@ namespace BusinessLogic.Services
                 EmployeeId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)
             };
 
-            
-            if (_actionContextAccessor.ActionContext.ModelState.IsValid)
-            {
-                
-                await _db.Vacations.AddAsync(vacation);
-                await _db.SaveChangesAsync();
+            await _db.Vacations.AddAsync(vacation);
+            await _db.SaveChangesAsync();
 
-                return true;
-            }
+            return serviceResult;
 
-            return false;
         }
 
 
-        public IEnumerable<Vacation> GetYoursEmployeeVacation(string email)
+        public ServiceResult<IEnumerable<Vacation>> GetYoursEmployeeVacation(string email)
         {
+            var serviceResult = new ServiceResult<IEnumerable<Vacation>>();
+
             Employee? employee = _db.Employees.FirstOrDefault(emp => emp.Email == email);
 
             if (employee == null)
             {
-                return null;
+                serviceResult.AppendError(String.Empty, "No such employee exists");
             }
             
           
             IEnumerable<Vacation> employeesVacation = _db.Vacations
                 .Where(v => v.EmployeeId == employee.Id)
                 .ToList();
-            return employeesVacation;
+
+            serviceResult.Data = employeesVacation;
+
+            return serviceResult;
             
         }
 
-        public Vacation GetVacation(int? id)
+        public ServiceResult<Vacation> GetVacation(int? id)
         {
+            var serviceResult = new ServiceResult<Vacation>();
 
-            if(id == null || id == 0) return null;
-            return _db.Vacations.Find(id);
+            if (id == null || id == 0) {
+                serviceResult.AppendError(String.Empty, "id is null");
+            }
+            serviceResult.Data = _db.Vacations.Find(id);
+            return serviceResult;
         }
 
-        public string? EditVacation(Vacation editedVacation)
+        public ServiceResult<string> EditVacation(Vacation editedVacation)
         {
-            _actionContextAccessor.ActionContext.ModelState.Remove("Employee");
-
+            var serviceResult = new ServiceResult<string>();
             if (_actionContextAccessor.ActionContext.ModelState.IsValid)
             {
                 string Email = _db.Employees.SingleOrDefault(e => e.Id == editedVacation.EmployeeId).Email;
-
+                serviceResult.Data = Email;
                 _db.Vacations.Update(editedVacation);
                 _db.SaveChanges();
-                return Email;
+                return serviceResult;
                 
             }
-            return null;
+            return serviceResult;
 
         }
 

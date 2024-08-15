@@ -16,6 +16,8 @@ export function useFetchData() {
         } catch (err) {
             if (err.response && err.response.data === 404) {
                 error.value = 'Data not found';
+            } else if (err.response && err.response.data == 401) {
+                error.value = 'Unauthorized'            
             } else {
                 console.error('Error fetching data:', err);
                 error.value = 'An error occurred while fetching the data.';

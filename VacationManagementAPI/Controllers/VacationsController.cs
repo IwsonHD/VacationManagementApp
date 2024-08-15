@@ -16,16 +16,17 @@ namespace VacationManagementAPI.Controllers
         {
             _vacationService = vacationService;
         }
+
         [HttpGet("{employeeEmail}")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Vacation>))]
         [ProducesResponseType(404)]
         public IActionResult GetEmployeeVacations(string employeeEmail)
         {
-            var employeeVacations = _vacationService.GetYoursEmployeeVacation(employeeEmail);
+            var serviceResult = _vacationService.GetYoursEmployeeVacation(employeeEmail);
 
-            if (employeeVacations.IsNullOrEmpty()) return NotFound();
+            if (!serviceResult.Succeed) return NotFound();
 
-            return Ok(employeeVacations);
+            return Ok(serviceResult.Data);
         }
     }
 }

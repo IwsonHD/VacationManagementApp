@@ -39,7 +39,7 @@ namespace VacationManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginDto model)
         {
-            var result = await _accountService.LoginUser(model);
+            var result = await _accountService.LoginUserAsync(model);
             if (!result.Succeed)
             {
                 result.UpdateModelError(ModelState);
@@ -65,7 +65,7 @@ namespace VacationManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Registration(RegisterDto model)
         {
-            var serviceResult = await _accountService.RegisterUser(model);
+            var serviceResult = await _accountService.RegisterUserAsync(model);
             if(!serviceResult.Succeed)
             {
                 serviceResult.UpdateModelError(ModelState);
@@ -100,7 +100,7 @@ namespace VacationManagementApp.Controllers
         [HttpGet]
         public async Task<IActionResult> AcceptNewEmployee(string email) 
         { 
-            var serviceResult = await _accountService.AcceptNewUser(email);
+            var serviceResult = await _accountService.AcceptNewUserAsync(email);
             if (!serviceResult.Succeed)
             {
                 return View("Error");

@@ -3,10 +3,17 @@ using BusinessLogic.Interfaces;
 using BusinessLogic.Services;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using BusinessLogic.Models;
+using Microsoft.AspNetCore.Identity;
 //using Microsoft.AspNetCore.Identity;
 
 
 var builder = WebApplication.CreateBuilder(args);
+var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:TokenKey"]);
+
 
 // Add services to the container.
 
@@ -17,18 +24,40 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddScoped<IVacationService, VacationService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+
 builder.Services.AddDbContext<VacationManagerDbContext>(options => 
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
 
-//I dont think ill identity in this api maybe late
-//builder.Services.AddScoped<IAccountService, AccountService>();
-/*builder.Services.AddIdentity<User, IdentityRole>()
+builder.Services.AddIdentity<User, IdentityRole>(o =>
+{
+    o.Password.RequireDigit = false;
+    o.Password.RequireNonAlphanumeric = false;
+    o.Password.RequireUppercase = false;
+    o.Password.RequiredLength = 0;
+    o.Password.RequireLowercase = false;
+    o.Password.RequireUppercase = false;
+
+})
     .AddEntityFrameworkStores<VacationManagerDbContext>()
     .AddDefaultTokenProviders();
-*/
-
 
 //cors policy
 
@@ -58,6 +87,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

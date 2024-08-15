@@ -4,6 +4,13 @@ using BusinessLogic.Models;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using BusinessLogic.DTOs;
 using BusinessLogic.AssistanceClasses;
+using Microsoft.Extensions.Configuration;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Runtime.InteropServices;
+using System.Net.WebSockets;
+
 
 namespace BusinessLogic.Services
 {
@@ -14,19 +21,22 @@ namespace BusinessLogic.Services
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IActionContextAccessor _actionContextAccessor;
+        private readonly IConfiguration _configuration;
 
         public AccountService(UserManager<User> userManager,
             RoleManager<IdentityRole> roleManager,
             SignInManager<User> signInManager,
-            IActionContextAccessor actionContextAccessor)
+            IActionContextAccessor actionContextAccessor,
+            IConfiguration configuration)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
             _actionContextAccessor = actionContextAccessor;
+            _configuration = configuration;
         }
 
-        public async Task<ServiceResult<String?>> LoginUser(LoginDto model)
+        public async Task<ServiceResult<String?>> LoginUserAsync(LoginDto model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             var serviceResult = new ServiceResult<String?>();
@@ -54,7 +64,28 @@ namespace BusinessLogic.Services
             
         }
 
-        public async Task<ServiceResult<bool>> AcceptNewUser(string newUsersEmail)
+        public async Task<ServiceResult<string>> LoginUserJWTAsync(LoginDto model)
+        {
+            var serviceResult = new ServiceResult<string>();
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            if (user == null)
+                serviceResult.AppendError(String.Empty, "Invalid login attempt.");
+            
+            if(!await _userManager.CheckPasswordAsync(user, model.Password))
+                serviceResult.AppendError(String.Empty, "Invalid login attempt.");
+
+            serviceResult.Data = GenerateJwtToken(user);
+
+            return serviceResult;
+
+        }
+
+
+
+
+        public async Task<ServiceResult<bool>> AcceptNewUserAsync(string newUsersEmail)
         {
             var user = await _userManager.FindByEmailAsync(newUsersEmail);
             var serviceResult = new ServiceResult<bool>();
@@ -92,7 +123,7 @@ namespace BusinessLogic.Services
 
 
 
-        public async Task<ServiceResult<bool>> RegisterUser(RegisterDto model)
+        public async Task<ServiceResult<bool>> RegisterUserAsync(RegisterDto model)
         {
             ServiceResult<bool> serviceResult = new ServiceResult<bool>();
 
@@ -176,5 +207,31 @@ namespace BusinessLogic.Services
 
         }
 
+        private string GenerateJwtToken(User user)
+        {
+            var key = System.Text.Encoding.ASCII.GetBytes(_configuration["Jwt:TokenKey"]);
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.UserName),
+                    new Claim(ClaimTypes.Email, user.Email)
+                }),
+                Expires = DateTime.UtcNow.AddHours(1),
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature
+                    )
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            return tokenHandler.WriteToken(token);
+        }
+
     }
+
 }

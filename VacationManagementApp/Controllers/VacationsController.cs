@@ -37,43 +37,17 @@ namespace VacationManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(VacationDto vacation)
         {
+            if(!ModelState.IsValid) return View(vacation);
 
-            if(await _vacationService.AddVacationToDb(vacation))
+            var serviceResult = await _vacationService.AddVacationToDb(vacation);
+
+            if (!serviceResult.Succeed)
             {
-                return RedirectToAction("Index");
+                serviceResult.UpdateModelError(ModelState);
+                return View(vacation);
             }
-            return View(vacation);
 
-
-
-
-
-
-
-
-            //vacation.EmployeeId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-
-            //if (ModelState.IsValid)
-            //{
-
-            //    Vacation newVacation = new Vacation
-            //    {
-            //        HowManyDays = vacation.HowManyDays,
-            //        EmployeeId = vacation.EmployeeId,
-            //        When = vacation.When,
-            //        state = Enums.VacationState.Waiting
-            //    };
-
-
-            //    await _db.Vacations.AddAsync(newVacation);
-            //    await _db.SaveChangesAsync();
-
-
-            //    return RedirectToAction("Index");
-            //}
-
-            //return View(vacation);
+            return RedirectToAction("Index");
         
         }
 
@@ -143,19 +117,16 @@ namespace VacationManagementApp.Controllers
         [HttpPost]
         public IActionResult EditState(Vacation editedVacation)
         {
-            string email = _vacationService.EditVacation(editedVacation);
+            var serviceResult = _vacationService.EditVacation(editedVacation);
 
-            if(email != null)
+            if(!serviceResult.Succeed)
             {
-                TempData["success"] = "State has been successfully updated";
-                return RedirectToAction("YourEmployeesVacation","Vacations",new { email });
+                serviceResult.UpdateModelError(ModelState);
+                return View(editedVacation);
             }
-            return View(editedVacation);
 
-
-
-
-
+            TempData["success"] = "State has been successfully updated";
+            return RedirectToAction("YourEmployeesVacation", "Vacations", new { serviceResult.Data });
 
 
 

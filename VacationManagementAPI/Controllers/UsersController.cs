@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using BusinessLogic.Interfaces;
 using BusinessLogic.AssistanceClasses;
+using Microsoft.AspNetCore.Authorization;
 
 namespace VacationManagementAPI.Controllers
 {
@@ -29,7 +30,6 @@ namespace VacationManagementAPI.Controllers
 
             return Ok(serviceResult.Data);
         }
-
 
         [HttpGet("employer/{employerEmail}")]
         [ProducesResponseType(200, Type = typeof(Employer))]
