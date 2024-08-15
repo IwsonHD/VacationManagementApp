@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using BusinessLogic.Models;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
+using BusinessLogic.DataBasesContext;
 
 
 namespace BusinessLogic.Services
@@ -15,10 +16,14 @@ namespace BusinessLogic.Services
     {
         private readonly SmtpSettings _smtpSettings;
         private readonly UserManager<User> _userManager;
+        private readonly VacationManagerDbContext _db;
         public EmailService(IConfiguration configuration,
-               UserManager<User> userManager) { 
+               UserManager<User> userManager,
+               VacationManagerDbContext db
+            ) { 
             _smtpSettings = configuration.GetSection("SmtpSettings").Get<SmtpSettings>();
             _userManager = userManager;
+            _db = db;
         }
 
         public async Task SendEmailConfirmationAsync(string email, string title, string body)
@@ -41,6 +46,21 @@ namespace BusinessLogic.Services
             {
                 await client.SendMailAsync(mailMessage);
             }
+
+            var user = await _userManager.FindByEmailAsync(email);
+            var mailToBeSaved = new EmailSent
+            {
+                Subject = title,
+                Body = body,
+                User = user,
+                UserId = user.Id,
+                SentDate = DateTime.Now,
+                Email = email,
+
+            };
+            
+            await _db.Emails.AddAsync(mailToBeSaved);
+            await _db.SaveChangesAsync();   
         }
         public async Task<bool> ConfirmaEmailAsync(string userId, string code)
         {

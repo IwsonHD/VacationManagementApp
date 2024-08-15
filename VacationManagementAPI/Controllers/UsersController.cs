@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using BusinessLogic.Interfaces;
+using BusinessLogic.AssistanceClasses;
 
 namespace VacationManagementAPI.Controllers
 {
@@ -22,24 +23,24 @@ namespace VacationManagementAPI.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetEmployee(string employeeEmail)
         {
-            var employee = await _userRepository.GetEmployeeByEmailAsync(employeeEmail);
+            var serviceResult= await _userRepository.GetEmployeeByEmailAsync(employeeEmail);
 
-            if (employee == null) return NotFound();
+            if (!serviceResult.Succeed) return NotFound();
 
-            return Ok(employee);
+            return Ok(serviceResult.Data);
         }
 
-        // Trasa do akcji będzie 'api/employer/{employeeEmail}'
+
         [HttpGet("employer/{employerEmail}")]
         [ProducesResponseType(200, Type = typeof(Employer))]
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetEmployer(string employerEmail)
         {
-            var employer = await _userRepository.GetEmployerByEmailAsync(employerEmail);
+            var serviceResult = await _userRepository.GetEmployerByEmailAsync(employerEmail);
 
-            if(employer == null) return NotFound();
+            if (!serviceResult.Succeed) return NotFound();
 
-            return Ok(employer);
+            return Ok(serviceResult.Data);
         }
     }
 }

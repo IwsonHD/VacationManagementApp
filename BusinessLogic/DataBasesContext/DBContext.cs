@@ -12,6 +12,7 @@ namespace BusinessLogic.DataBasesContext
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Employer> Employers { get; set; }
         public DbSet<Vacation> Vacations { get; set; }
+        public DbSet<EmailSent> Emails { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -23,10 +24,18 @@ namespace BusinessLogic.DataBasesContext
 
             modelBuilder.Entity<Employer>().ToTable("Employers");
             modelBuilder.Entity<Employer>().HasBaseType<User>();
+            
             modelBuilder.Entity<Employee>()
                 .HasMany(e => e.Vacations)
                 .WithOne(v => v.Employee)
                 .HasForeignKey(v => v.EmployeeId);
+
+            modelBuilder.Entity<EmailSent>()
+                .HasOne(e => e.User)
+                .WithMany(u => u.EmailsSentTo)
+                .HasForeignKey(e => e.UserId);
+                
+                         
         }
 
 

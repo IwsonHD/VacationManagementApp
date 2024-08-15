@@ -3,11 +3,7 @@ using BusinessLogic.Interfaces;
 using BusinessLogic.Models;
 using Microsoft.EntityFrameworkCore;
 using BusinessLogic.DTOs;   
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BusinessLogic.AssistanceClasses; 
 
 namespace BusinessLogic.Services
 {
@@ -21,9 +17,16 @@ namespace BusinessLogic.Services
         }
 
 
-        public async Task<EmployeeDTO?> GetEmployeeByEmailAsync(string email)
+        public async Task<ServiceResult<EmployeeDTO>> GetEmployeeByEmailAsync(string email)
         {
+            ServiceResult<EmployeeDTO> serviceResult = new ServiceResult<EmployeeDTO>();
             var employee = await _db.Employees.FirstOrDefaultAsync(emp => emp.Email == email);
+            
+            if (employee == null) {
+                serviceResult.AppendError(string.Empty, "Such employee does not exist");
+                return serviceResult;
+            }
+
             var employeeDTO = new EmployeeDTO
             {
                 Email = employee.Email,
@@ -33,12 +36,21 @@ namespace BusinessLogic.Services
                 Role = "Employee",
                 EmployersEmail = employee.EmployersEmail
             };
-            return employeeDTO;
+            serviceResult.Data = employeeDTO;   
+            return serviceResult;
         }
 
-        public async Task<EmployerDTO?> GetEmployerByEmailAsync(string email)
+        public async Task<ServiceResult<EmployerDTO>> GetEmployerByEmailAsync(string email)
         {
-            var employer = await _db.Employers.FirstOrDefaultAsync(employee => employee.Email == email);   
+            ServiceResult<EmployerDTO> serviceResult = new ServiceResult<EmployerDTO>();
+            var employer = await _db.Employers.FirstOrDefaultAsync(employee => employee.Email == email);
+            
+            if(employer == null) {
+                serviceResult.AppendError(string.Empty, "Such employer does not exist");
+                return serviceResult;
+            }
+
+
             var employerDTO = new EmployerDTO
             {
                 Email = employer.Email,
@@ -49,7 +61,9 @@ namespace BusinessLogic.Services
                 LastName = employer.LastName
             };
 
-            return employerDTO;
+            serviceResult.Data = employerDTO;
+
+            return serviceResult;
         }   
 
         

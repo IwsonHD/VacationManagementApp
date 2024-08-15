@@ -1,33 +1,33 @@
-<!-- EmployerComponent.vue -->
 <template>
-    <div v-if="employer">
-        <h2>Employer Details</h2>
-        <p><strong>Name:</strong> {{ employer.firstName }}</p>
-        <p><strong>Email:</strong> {{ employer.email }}</p>
-    </div>
-    <div v-else>
-        <p>Loading...</p>
+    <div>
+        <h2>Find Employer Details</h2>
+        <input type="email"
+               v-model="email"
+               placeholder="Enter employer email"
+               @keyup.enter="fetchEmployerData" />
+        <button @click="fetchEmployerData">Search</button>
+
+        <div v-if="loading">Loading...</div>
+        <div v-if="error">{{ error }}</div>
+        <div v-if="data">
+            <h2>Employer Details</h2>
+            <p><strong>Name:</strong> {{ data.firstName }}</p>
+            <p><strong>Email:</strong> {{ data.email }}</p>
+        </div>
     </div>
 </template>
 
 <script setup>
-    import { ref, onMounted } from 'vue';
-    import axios from 'axios';
+    import { ref } from 'vue';
+    import { useFetchData } from '../composables/useFetchData';
     import { API_BASE_URL } from '../config';
 
-    const employer = ref(null);
+    const email = ref('');
+    const { data, loading, error, fetchData } = useFetchData();
 
-    onMounted(async () => {
-        try {
-            const response = await axios.get(`${API_BASE_URL}/Users/employer/iwo@czart.net`);
-            employer.value = response.data || {}; // Upewnij siê, ¿e employer nie jest null
-            console.log(employer.value);
-        } catch (error) {
-            console.error('Error fetching employer data:', error);
+    const fetchEmployerData = () => {
+        if (email.value) {
+            fetchData(`${API_BASE_URL}/Users/employer/${email.value}`);
         }
-    });
+    };
 </script>
-
-<style scoped>
-    /* Dodaj style wed³ug potrzeby */
-</style>

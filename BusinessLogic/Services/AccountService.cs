@@ -31,6 +31,13 @@ namespace BusinessLogic.Services
             var user = await _userManager.FindByEmailAsync(model.Email);
             var serviceResult = new ServiceResult<String?>();
 
+            if(user == null)
+            {
+                serviceResult.AppendError(nameof(LoginDto.Email), "Such user does not exist");
+                return serviceResult;
+            }
+
+
             if (!user.EmailConfirmed)
             {
                 serviceResult.AppendError(nameof(LoginDto.Email), "Confirm your e-mail to log in");
@@ -40,8 +47,9 @@ namespace BusinessLogic.Services
  
             if (!result.Succeeded)
             {
-                serviceResult.AppendError(String.Empty, "Wrong password or email");
+                serviceResult.AppendError(nameof(LoginDto.Password), "Wrong password");
             }
+
             return serviceResult;
             
         }

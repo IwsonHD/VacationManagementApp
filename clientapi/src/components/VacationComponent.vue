@@ -1,32 +1,36 @@
 <template>
-    <div v-if="vacations">
-        <h2>Vacations</h2>
-        <div v-for="vacation in vacations" :key="vacation.id">
-            <p><strong>HowManyDays:</strong> {{ vacation.howManyDays }}</p>
-            <p><strong>State:</strong> {{ vacation.state }}</p>
-            <p><strong>When:</strong> {{ vacation.when }}</p>
-            
+    <div>
+        <h2>Find Vacations</h2>
+        <input type="email"
+               v-model="email"
+               placeholder="Enter user email"
+               @keyup.enter="fetchVacationData" />
+        <button @click="fetchVacationData">Search</button>
+
+        <div v-if="loading">Loading...</div>
+        <div v-if="error">{{ error }}</div>
+        <div v-if="data">
+            <h2>Vacations</h2>
+            <div v-for="vacation in data" :key="vacation.id">
+                <p><strong>How Many Days:</strong> {{ vacation.howManyDays }}</p>
+                <p><strong>State:</strong> {{ vacation.state }}</p>
+                <p><strong>When:</strong> {{ vacation.when }}</p>
+            </div>
         </div>
-    </div>
-    <div v-else>
-        <p>Loading...</p>
     </div>
 </template>
 
 <script setup>
-    import { ref, onMounted } from 'vue';
-    import axios from 'axios';
+    import { ref } from 'vue';
+    import { useFetchData } from '../composables/useFetchData';
     import { API_BASE_URL } from '../config';
 
-    const vacations = ref(null);
+    const email = ref('');
+    const { data, loading, error, fetchData } = useFetchData();
 
-    onMounted(async () => {
-        try {
-            const response = await axios.get(`${API_BASE_URL}/Vacations/jvc35414@nowni.com`);
-            vacations.value = response.data;
-            console.log(vacations.value);
-        } catch (error) {
-            console.error('Error fetching vacation data:', error);
+    const fetchVacationData = () => {
+        if (email.value) {
+            fetchData(`${API_BASE_URL}/Vacations/${email.value}`);
         }
-    });
+    };
 </script>

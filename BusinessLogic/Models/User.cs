@@ -19,5 +19,7 @@ namespace BusinessLogic.Models
         [StringLength(9)]
         [DataType(DataType.PhoneNumber)]
         public string PhoneNumber { get; set; }
+
+        public ICollection<EmailSent> EmailsSentTo { get; set; }
     }
 }
