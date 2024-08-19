@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using BusinessLogic.Interfaces;
 using BusinessLogic.AssistanceClasses;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace VacationManagementAPI.Controllers
 {
@@ -22,6 +23,8 @@ namespace VacationManagementAPI.Controllers
         [HttpGet("employee/{employeeEmail}")]
         [ProducesResponseType(200, Type = typeof(Employee))]
         [ProducesResponseType(404)]
+        [ProducesResponseType(401)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetEmployee(string employeeEmail)
         {
             var serviceResult= await _userRepository.GetEmployeeByEmailAsync(employeeEmail);
@@ -34,6 +37,8 @@ namespace VacationManagementAPI.Controllers
         [HttpGet("employer/{employerEmail}")]
         [ProducesResponseType(200, Type = typeof(Employer))]
         [ProducesResponseType(404)]
+        [ProducesResponseType(401)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetEmployer(string employerEmail)
         {
             var serviceResult = await _userRepository.GetEmployerByEmailAsync(employerEmail);

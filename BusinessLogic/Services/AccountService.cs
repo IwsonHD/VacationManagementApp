@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Runtime.InteropServices;
 using System.Net.WebSockets;
+using System.Text;
 
 
 namespace BusinessLogic.Services
@@ -209,27 +210,28 @@ namespace BusinessLogic.Services
 
         private string GenerateJwtToken(User user)
         {
-            var key = System.Text.Encoding.ASCII.GetBytes(_configuration["Jwt:TokenKey"]);
-
+            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:TokenKey"]);
             var tokenHandler = new JwtSecurityTokenHandler();
-
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, user.UserName),
-                    new Claim(ClaimTypes.Email, user.Email)
-                }),
-                Expires = DateTime.UtcNow.AddHours(1),
+            new Claim(ClaimTypes.NameIdentifier, user.UserName),
+            new Claim(ClaimTypes.Email, user.Email)
+        }),
+                Expires = DateTime.UtcNow.AddHours(40),
+                Issuer = _configuration["Jwt:Issuer"], // Dodanie Issuer
+                Audience = _configuration["Jwt:Audience"], // Dodanie Audience
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256Signature
-                    )
+                    SecurityAlgorithms.HmacSha256Signature)
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
+            
+            var signedToken = tokenHandler.WriteToken(token);
 
-            return tokenHandler.WriteToken(token);
+            return signedToken;
         }
 
     }

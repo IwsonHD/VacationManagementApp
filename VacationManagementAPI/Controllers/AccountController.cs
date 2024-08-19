@@ -10,6 +10,7 @@ namespace VacationManagementAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
@@ -19,6 +20,8 @@ namespace VacationManagementAPI.Controllers
         }
 
         [HttpPost("login")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(200)]
         public async Task<IActionResult> Login([FromBody] LoginDto model)
         {
             var serviceResult = await _accountService.LoginUserJWTAsync(model);
@@ -26,7 +29,7 @@ namespace VacationManagementAPI.Controllers
                 return Unauthorized("Invalid login attempt");
 
 
-            return Ok(serviceResult.Data);
+            return Ok(new {Token = serviceResult.Data});
         }
     }
 }

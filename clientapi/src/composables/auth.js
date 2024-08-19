@@ -1,10 +1,9 @@
-import axios from 'axios';
-import { API_BASE_URL } from '../config';
+import axios from '../axiosConfig';
 
 class AuthService {
     login(user) {
         return axios
-            .post(`${ API_BASE_URL }/Account/login`, {
+            .post('/Account/login', {
                 email: user.email,
                 password: user.password
             })
@@ -13,7 +12,7 @@ class AuthService {
                     localStorage.setItem('user', JSON.stringify(response.data));
                 }
                 return response.data;
-            })
+            });
     }
 
     logout() {
@@ -23,7 +22,6 @@ class AuthService {
     getCurrentUser() {
         return JSON.parse(localStorage.getItem('user'));
     }
- }
+}
 
 export default new AuthService();
-
