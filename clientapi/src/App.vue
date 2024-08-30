@@ -4,12 +4,17 @@
     import EmployerComponent from './components/EmployerComponent.vue'
     import VacationComponent from './components/VacationComponent.vue'
     import LoginComponent from './components/LoginComponent.vue'
+    import AddVacationComponent from './components/AddVacationComponent.vue'
+    import YourEmployeesComponent from './components/YourEmployeesComponent.vue'
+    import AuthService from './composables/auth.js'
 
     const currentView = ref('')  // Przechowuje aktualnie wybrany widok
+    const userEmail = ref('')
 
     const setView = (view) => {
         currentView.value = view
     }
+
 
 </script>
 
@@ -18,7 +23,7 @@
         <h1>Vacation Management API</h1>
         <div class="auth-buttons">
             <button @click="setView('login')">Login</button>
-            <button @click="setView('register')">Register</button>
+            <button @click="setView('register')">Regist er</button>
         </div>
     </header>
 
@@ -27,13 +32,18 @@
             <button @click="setView('employer')">Show Employer</button>
             <button @click="setView('employee')">Show Employee</button>
             <button @click="setView('vacation')">Show Vacations</button>
+            <button @click="setView('yourEmployees')">Show your employees</button>
+            <button @click="setView('addVacation')">Add Vacation</button>
+
         </nav>
 
         <section class="content">
-            <LoginComponent v-if="currentView === 'login'"/>
+            <YourEmployeesComponent v-if="currentView === 'yourEmployees'"/>
+            <LoginComponent v-if="currentView === 'login'" />
             <EmployerComponent v-if="currentView === 'employer'" />
             <EmployeeComponent v-if="currentView === 'employee'" />
             <VacationComponent v-if="currentView === 'vacation'" />
+            <AddVacationComponent v-if="currentView === 'addVacation'" />
         </section>
     </main>
 </template>

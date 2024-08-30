@@ -52,6 +52,7 @@ namespace BusinessLogic.Services
             {
                 HowManyDays = vacationDto.HowManyDays,
                 When = vacationDto.When,
+                //Get rid of this from here, bussines logic should be independed of http or any other protocol
                 EmployeeId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)
             };
 

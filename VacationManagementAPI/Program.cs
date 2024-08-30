@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using BusinessLogic.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Diagnostics;
-using System.Text.Json;
+using DevelopmentOnly;
+using BusinessLogic.AssistanceClasses;
+using BusinessLogic.Middlerware;
+
 //using Microsoft.AspNetCore.Identity;
 
 
@@ -22,15 +24,23 @@ builder.Logging.AddDebug();
 
 
 // Add services to the container.
-
+builder.Services.AddMediatR(config =>
+{
+    config.RegisterServicesFromAssembly(typeof(BusinessLogicAssemblyMarker).Assembly);
+});
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddScoped<IVacationService, VacationService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddAutoMapper(typeof(BusinessLogicAssemblyMarker).Assembly);
+builder.Services.AddTransient<GlobalExceptionHandlerMiddleware>();
+
 
 builder.Services.AddDbContext<VacationManagerDbContext>(options => 
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -56,28 +66,15 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = builder.Configuration["Jwt:Audience"],  // Ustawienie Audience
         IssuerSigningKey = new SymmetricSecurityKey(key)
     };
-    options.Events = new JwtBearerEvents
-    {
-        OnAuthenticationFailed = context =>
-        {
-            context.Response.StatusCode = 401;
-            context.Response.ContentType = "application/json";
-            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-            var result = JsonSerializer.Serialize(new { message = context.Exception.Message });
-            logger.LogInformation(result);
-            return context.Response.WriteAsync(result);
-        },
-        OnTokenValidated = context =>
-        {
-            // Logowanie sukcesu walidacji tokenu
-            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-            logger.LogInformation("Token validated successfully.");
-            return Task.CompletedTask;
-        }
-    };
-
-
 });
+
+//builder.Services.AddAuthorization(options =>
+//{
+//    options.AddPolicy("RequireEmployeeRole", policy => policy.RequireRole("Employee"));
+//    options.AddPolicy("RequireEmployerRole", policy => policy.RequireRole("Employer"));
+//});
+
+
 
 builder.Services.AddIdentity<User, IdentityRole>(o =>
 {
@@ -108,6 +105,8 @@ builder.Services.AddCors(options =>
         });
 });
 
+
+
 var app = builder.Build();
 
 
@@ -117,27 +116,25 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<VacationManagerDbContext>();
+
+        var seeder = new DatabaseSeeder(db, scope.ServiceProvider.GetRequiredService<UserManager<User>>());
+
+        var employerCount = await db.Employers.CountAsync();
+
+        if (employerCount < 10)
+        {
+            await seeder.Seed(employersAmount: 10, employeePerEmployerRange: (5, 15), vacationPerEmployeeRange: (1, 10));
+        }
+    }
 }
 
 app.UseHttpsRedirection();
 
-//app.UseExceptionHandler(appError => {
-//    appError.Run(async context => {
-//        context.Response.StatusCode = 500;
-//        context.Response.ContentType = "application/json";
-
-//        var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
-//        if (contextFeature is not null)
-//        {
-//            await context.Response.WriteAsJsonAsync(new
-//            {
-//                context.Response.StatusCode,
-//                Message = contextFeature.Error.Message
-
-//            }.ToString());
-//        }
-//    });
-//});
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
 app.UseCors("ClientAPI");
 

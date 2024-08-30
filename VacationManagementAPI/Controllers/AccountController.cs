@@ -22,6 +22,7 @@ namespace VacationManagementAPI.Controllers
         [HttpPost("login")]
         [ProducesResponseType(401)]
         [ProducesResponseType(200)]
+
         public async Task<IActionResult> Login([FromBody] LoginDto model)
         {
             var serviceResult = await _accountService.LoginUserJWTAsync(model);

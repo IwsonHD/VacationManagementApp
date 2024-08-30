@@ -5,16 +5,22 @@ using BusinessLogic.DataBasesContext;
 using BusinessLogic.Interfaces;
 using BusinessLogic.Models;
 using BusinessLogic.Services;
+using BusinessLogic.AssistanceClasses;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddMediatR(configuration =>
+{
+    configuration.RegisterServicesFromAssembly(typeof(BusinessLogic.AssistanceClasses.BusinessLogicAssemblyMarker).Assembly);
+});
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IHomeService, HomeService>();
 builder.Services.AddScoped<IVacationService, VacationService>();
-builder.Services.AddTransient<IEmailService, EmailService>();  
+builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddAutoMapper(typeof(BusinessLogicAssemblyMarker).Assembly);
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();

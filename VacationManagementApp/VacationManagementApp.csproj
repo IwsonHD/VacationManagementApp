@@ -5,7 +5,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="Bogus" Version="35.6.0" />
     <PackageReference Include="MailKit" Version="4.7.1.1" />
+    <PackageReference Include="MediatR" Version="12.4.0" />
     <PackageReference Include="MimeKit" Version="4.7.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
@@ -15,7 +18,11 @@
     <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="8.0.8" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.4" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
+     <ItemGroup>
+       <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
+       <ProjectReference Include="..\DevelopmentOnly\DevelopmentOnly.csproj" />
+     </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+  	<Reference Include="../DevelopmentOnly/DevelopmentOnly.csproj" />
   </ItemGroup>
 </Project>

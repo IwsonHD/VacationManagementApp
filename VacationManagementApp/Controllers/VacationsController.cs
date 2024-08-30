@@ -6,29 +6,23 @@ using BusinessLogic.DataBasesContext;
 using BusinessLogic.Models;
 using BusinessLogic.Interfaces;
 using BusinessLogic.DTOs;
+using BusinessLogic.CQRS.Queries.GetVacations;
+using MediatR;
+using BusinessLogic.Services;
 
 namespace VacationManagementApp.Controllers
 {
-    public class VacationsController : Controller
+    public class VacationsController(ISender sender,VacationManagerDbContext db, IVacationService vacationService) : Controller
     {
-
-        private readonly VacationManagerDbContext _db;
-        private readonly IVacationService _vacationService;
-
-        public VacationsController(VacationManagerDbContext db, IVacationService vacationService)
-        {
-            _db = db;
-            _vacationService = vacationService;
-        }
 
         [HttpGet]
         public IActionResult Index()
         {
             //var currUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            //IEnumerable<Vacation> userVacations = _db.Vacations
+            //IEnumerable<Vacation> userVacations = db.Vacations
             //    .Where(v => v.EmployeeId == currUserId)
             //    .ToList();
-            var serviceResult = _vacationService.GetVacations();
+            var serviceResult = vacationService.GetVacations();
 
             if(!serviceResult.Succeed)
                 return NotFound();
@@ -42,7 +36,7 @@ namespace VacationManagementApp.Controllers
         {
             if(!ModelState.IsValid) return View(vacation);
 
-            var serviceResult = await _vacationService.AddVacationToDb(vacation);
+            var serviceResult = await vacationService.AddVacationToDb(vacation);
 
             if (!serviceResult.Succeed)
             {
@@ -63,7 +57,7 @@ namespace VacationManagementApp.Controllers
 
         public IActionResult YourEmployeesVacation(string email)
         {
-            var serviceResult = _vacationService.GetYoursEmployeeVacation(email);
+            var serviceResult = vacationService.GetYoursEmployeeVacation(email);
 
             if (!serviceResult.Succeed)
             {
@@ -78,7 +72,7 @@ namespace VacationManagementApp.Controllers
 
 
 
-            //Employee? employee = _db.Employees.FirstOrDefault(e => e.Email == email);
+            //Employee? employee = db.Employees.FirstOrDefault(e => e.Email == email);
 
             //if (employee == null)
             //{
@@ -86,7 +80,7 @@ namespace VacationManagementApp.Controllers
             //}
             //else
             //{
-            //    IEnumerable<Vacation> employeesVacation = _db.Vacations
+            //    IEnumerable<Vacation> employeesVacation = db.Vacations
             //        .Where(v => v.EmployeeId == employee.Id)
             //        .ToList();
 
@@ -99,7 +93,7 @@ namespace VacationManagementApp.Controllers
         [HttpGet]
         public IActionResult EditState(int? Id)
         {
-            var serviceResult = _vacationService.GetVacation(Id);
+            var serviceResult = vacationService.GetVacation(Id);
             if (!serviceResult.Succeed)
             {
                 return NotFound();
@@ -113,7 +107,7 @@ namespace VacationManagementApp.Controllers
             //    return NotFound();
             //}
 
-            //var vacationFromDb = _db.Vacations.Find(Id);
+            //var vacationFromDb = db.Vacations.Find(Id);
 
             //if(vacationFromDb == null)
             //{
@@ -127,7 +121,7 @@ namespace VacationManagementApp.Controllers
         [HttpPost]
         public IActionResult EditState(Vacation editedVacation)
         {
-            var serviceResult = _vacationService.EditVacation(editedVacation);
+            var serviceResult = vacationService.EditVacation(editedVacation);
 
             if(!serviceResult.Succeed)
             {
@@ -148,11 +142,11 @@ namespace VacationManagementApp.Controllers
 
             //if (ModelState.IsValid)
             //{
-            //    string Email = _db.Employees.SingleOrDefault(e => e.Id == editedVacation.EmployeeId).Email;
+            //    string Email = db.Employees.SingleOrDefault(e => e.Id == editedVacation.EmployeeId).Email;
             //    if(Email == null) { return NotFound(); }
 
-            //    _db.Vacations.Update(editedVacation);
-            //    _db.SaveChanges();
+            //    db.Vacations.Update(editedVacation);
+            //    db.SaveChanges();
             //    TempData["success"] = "State has been successfully updated";
             //    return RedirectToAction("YourEmployeesVacation","Vacations",new { Email });
 

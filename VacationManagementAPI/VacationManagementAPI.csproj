@@ -6,6 +6,9 @@
     <UserSecretsId>bd8abc73-3968-43f4-830b-98cdff387385</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="Bogus" Version="35.6.0" />
+    <PackageReference Include="MediatR" Version="12.4.0" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.0.1" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.0.1" />
     <!-- użyj wersji 7.x -->
@@ -16,5 +19,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
+    <ProjectReference Include="..\DevelopmentOnly\DevelopmentOnly.csproj" /> 
   </ItemGroup>
+
 </Project>

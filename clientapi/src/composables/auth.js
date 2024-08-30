@@ -10,6 +10,7 @@ class AuthService {
             .then(response => {
                 if (response.data.token) {
                     localStorage.setItem('user', JSON.stringify(response.data));
+                    localStorage.setItem('email', user.email);  // Storing plain email as string
                 }
                 return response.data;
             });
@@ -17,10 +18,15 @@ class AuthService {
 
     logout() {
         localStorage.removeItem('user');
+        localStorage.removeItem('email');
     }
 
     getCurrentUser() {
-        return JSON.parse(localStorage.getItem('user'));
+        return JSON.parse(localStorage.getItem('user')) || null;  // Return null if not found
+    }
+
+    getCurrentUserEmail() {
+        return localStorage.getItem('email') || '';  // Return empty string if not found
     }
 }
 

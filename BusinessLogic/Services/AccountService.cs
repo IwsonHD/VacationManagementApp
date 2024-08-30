@@ -77,7 +77,7 @@ namespace BusinessLogic.Services
             if(!await _userManager.CheckPasswordAsync(user, model.Password))
                 serviceResult.AppendError(String.Empty, "Invalid login attempt.");
 
-            serviceResult.Data = GenerateJwtToken(user);
+            serviceResult.Data = await GenerateJwtToken(user);
 
             return serviceResult;
 
@@ -182,7 +182,6 @@ namespace BusinessLogic.Services
             }
 
             var result = await _userManager.CreateAsync(newUser, model.Password);
-
             if(!result.Succeeded)
             {
                 foreach(var error in result.Errors)
@@ -208,17 +207,27 @@ namespace BusinessLogic.Services
 
         }
 
-        private string GenerateJwtToken(User user)
+        private async Task<string> GenerateJwtToken(User user)
         {
             var key = Encoding.ASCII.GetBytes(_configuration["Jwt:TokenKey"]);
             var tokenHandler = new JwtSecurityTokenHandler();
+
+            // Pobranie ról użytkownika
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            // Tworzenie listy claimów
+            var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id),
+                    new Claim(ClaimTypes.Email, user.Email)
+                };
+
+            // Dodanie każdej roli do claimów
+            claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[]
-                {
-            new Claim(ClaimTypes.NameIdentifier, user.UserName),
-            new Claim(ClaimTypes.Email, user.Email)
-        }),
+                Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddHours(40),
                 Issuer = _configuration["Jwt:Issuer"], // Dodanie Issuer
                 Audience = _configuration["Jwt:Audience"], // Dodanie Audience
@@ -228,11 +237,12 @@ namespace BusinessLogic.Services
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            
+
             var signedToken = tokenHandler.WriteToken(token);
 
             return signedToken;
         }
+
 
     }
 
