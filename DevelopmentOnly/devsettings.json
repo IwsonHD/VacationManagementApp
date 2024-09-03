@@ -1,0 +1,29 @@
+{
+  "SeederSettings": {
+    "DefaultUsers": {
+      "Employers": [
+        {
+          "Email": "ivo@czart.net",
+          "Password": "123",
+          "PhoneNumber": "123123123",
+          "CompanyName": "gct",
+          "FirstName": "Igor",
+          "LastName": "Czartowski",
+          "EmailConfirmed": true
+        }
+      ],
+      "Employees": [
+        {
+          "Email": "iwo@czart.net",
+          "Password": "123",
+          "PhoneNumber": "123123123",
+          "FirstName": "Iwo",
+          "LastName": "Czartowski",
+          "EmployersEmail": "ivo@czart.net",
+          "EmployeeConfirmed": true,
+          "EmailConfirmed": true
+        }
+      ]
+    }
+  }
+}

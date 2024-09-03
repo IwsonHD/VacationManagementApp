@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using DevelopmentOnly;
 using BusinessLogic.AssistanceClasses;
 using BusinessLogic.Middlerware;
+using System.ServiceProcess;
 
 //using Microsoft.AspNetCore.Identity;
 
@@ -120,15 +121,14 @@ if (app.Environment.IsDevelopment())
     using (var scope = app.Services.CreateScope())
     {
         var db = scope.ServiceProvider.GetRequiredService<VacationManagerDbContext>();
+        //var logger = scope.ServiceProvider.GetRequiredService<ILogger>();   
 
         var seeder = new DatabaseSeeder(db, scope.ServiceProvider.GetRequiredService<UserManager<User>>());
 
-        var employerCount = await db.Employers.CountAsync();
+        //var employerCount = await db.Employers.CountAsync();
 
-        if (employerCount < 10)
-        {
-            await seeder.Seed(employersAmount: 10, employeePerEmployerRange: (5, 15), vacationPerEmployeeRange: (1, 10));
-        }
+        await seeder.Seed(employersAmount: 10, employeePerEmployerRange: (5, 15), vacationPerEmployeeRange: (1, 10));
+        
     }
 }
 

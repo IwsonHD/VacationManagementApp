@@ -5,16 +5,41 @@ using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using System.Reflection.Metadata.Ecma335;
 using Microsoft.AspNetCore.Identity;
 using BusinessLogic.Enums;
+using System.Drawing.Text;
+using System.Text.Json;
+using Microsoft.Extensions.Logging;
+using static DevelopmentOnly.DatabaseSeeder;
+using Microsoft.Identity.Client;
 
 namespace DevelopmentOnly
 {
     public class DatabaseSeeder(
         VacationManagerDbContext db,
         UserManager<User> userManager
+        //ILogger<DatabaseSeeder> logger
         )
     {
+        private readonly string settingsPath = "C:\\Users\\iwo\\Source\\Repos\\IwsonHD\\VacationManagementApp\\DevelopmentOnly\\devsettings.json";
+        
         public async Task Seed(int employersAmount, (int, int) employeePerEmployerRange, (int, int) vacationPerEmployeeRange)
         {
+            var defaultEmployees = new Dictionary<Employee, string>();
+            var defaultEmployers = new Dictionary<Employer, string>();
+
+            GenerateDefaultUsers(out defaultEmployers, out defaultEmployees);
+
+            foreach (var employer in defaultEmployers)
+            {
+                if (await userManager.FindByEmailAsync(employer.Key.Email) == null)
+                    await userManager.CreateAsync(employer.Key, employer.Value);
+            }
+
+            foreach (var employee in defaultEmployees)
+            {
+                if (await userManager.FindByEmailAsync(employee.Key.Email) == null)
+                    await userManager.CreateAsync(employee.Key, employee.Value);
+            }
+
             if (db.Employees.Count() >= 50) return;
 
             var employers = GenerateEmployers(employersAmount);
@@ -40,6 +65,8 @@ namespace DevelopmentOnly
             var vacations = GenerateVacations(employeeIds, vacationPerEmployeeRange);
 
             await db.Vacations.AddRangeAsync(vacations);
+
+            await db.SaveChangesAsync();
         }
 
 
@@ -102,6 +129,116 @@ namespace DevelopmentOnly
             return vacationOut;
         }
 
+        //User and coresponding password
+        // User and corresponding password
+        private void GenerateDefaultUsers(out Dictionary<Employer, string>? defaultEmployers, out Dictionary<Employee, string>? defaultEmployees)
+        {
+            string jsonString = File.ReadAllText(settingsPath);
+
+            SeederSettingsContainer? seederSettings = null;
+            defaultEmployers = new Dictionary<Employer, string>();
+            defaultEmployees = new Dictionary<Employee, string>();
+
+            try
+            {
+                seederSettings = JsonSerializer.Deserialize<SeederSettingsContainer>(jsonString);
+
+                if (seederSettings?.SeederSettings == null)
+                {
+                    System.Console.WriteLine("SeederSettings or SeederSettingsContainer is null.");
+                    return;
+                }
+
+                var defaultUsers = seederSettings.SeederSettings.DefaultUsers;
+                if (defaultUsers == null)
+                {
+                    System.Console.WriteLine("DefaultUsers is null.");
+                    return;
+                }
+
+                foreach (var user in defaultUsers.Employers)
+                {
+                    Employer employer = new Employer
+                    {
+                        Email = user.Email,
+                        UserName = user.Email,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        PhoneNumber = user.PhoneNumber,
+                        CompanyName = user.CompanyName,
+                        EmailConfirmed = user.EmailConfirmed
+                    };
+
+                    defaultEmployers.Add(employer, user.Password);
+                }
+
+                foreach (var user in defaultUsers.Employees)
+                {
+                    Employee employee = new Employee
+                    {
+                        Email = user.Email,
+                        UserName = user.Email,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        PhoneNumber = user.PhoneNumber,
+                        EmployersEmail = user.EmployersEmail,
+                        EmployeeConfirmed = user.EmployeeConfirmed,
+                        EmailConfirmed = user.EmailConfirmed
+                    };
+
+                    defaultEmployees.Add(employee, user.Password);
+                }
+            }
+            catch (JsonException ex)
+            {
+                System.Console.WriteLine($"JSON Deserialization Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine($"Unexpected Error: {ex.Message}");
+            }
+        }
+
+
+        public class EmployeeSetting
+        {
+            public string Email { get; set; }
+            public string Password { get; set; }
+            public string PhoneNumber { get; set; } // Typ long, jak wyżej
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string EmployersEmail { get; set; } // Nowe pole
+            public bool EmployeeConfirmed { get; set; } // Nowe pole
+            public bool EmailConfirmed { get; set; }
+        }
+
+        public class EmployerSetting
+        {
+            public string Email { get; set; }
+            public string Password { get; set; }
+            public string PhoneNumber { get; set; }
+            public string CompanyName { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public bool EmailConfirmed { get; set; }
+
+        }
+
+        private class SeederSettings
+        {
+            public DefaultUsers DefaultUsers { get; set; }
+        }
+
+        private class DefaultUsers
+        {
+            public List<EmployerSetting> Employers { get; set; }
+            public List<EmployeeSetting> Employees { get; set; }
+        }
+
+        private class SeederSettingsContainer
+        {
+            public SeederSettings SeederSettings { get; set; }
+        }
 
     }
 }

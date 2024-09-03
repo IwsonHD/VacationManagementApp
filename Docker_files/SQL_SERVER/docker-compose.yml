@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server
+    container_name: vmapp-sql
+    environment:
+      ACCEPT_EULA: "1"
+      MSSQL_SA_PASSWORD: "MyPass@word"
+      MSSQL_PID: "Developer"
+      MSSQL_USER: "SA"
+    ports:
+      - "1433:1433"
+    volumes:
+      - c:\Users\iwo\sql_data\VMapp_data\log:/var/opt/mssql/log
+      - c:\Users\iwo\sql_data\VMapp_data\data:/var/opt/mssql/data
+      - c:\Users\iwo\sql_data\VMapp_data\secrets:/var/opt/mssql/secrets
+
